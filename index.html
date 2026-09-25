@@ -11,25 +11,25 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
 <style>
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-html,body{margin:0;padding:0;width:100%;height:100%;overflow:hidden;background:#080808;color:#fff;font-family:Arial,Helvetica,sans-serif}
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#080808;color:#fff;font-family:Arial,Helvetica,sans-serif}
 body{display:flex;flex-direction:column}
 .header{height:58px;min-height:58px;display:flex;align-items:center;justify-content:center;background:#0d0d0d;border-bottom:1px solid #222;z-index:20}
-.logo{font-size:18px;font-weight:800;letter-spacing:.4px}
+.logo{font-size:18px;font-weight:800}
 #viewer{position:relative;flex:1;min-height:0;overflow:hidden}
 canvas{display:block;width:100%;height:100%}
 #loading{position:absolute;inset:0;z-index:10;display:flex;align-items:center;justify-content:center;flex-direction:column;background:#080808}
 .loading-title{font-size:18px;font-weight:700;margin-bottom:12px}
 .progress-box{width:min(280px,80%);height:7px;background:#222;border-radius:50px;overflow:hidden}
-#progress{width:0;height:100%;background:#fff;transition:width:.15s}
+#progress{width:0;height:100%;background:#fff}
 #loadingText{margin-top:10px;font-size:13px;color:#aaa}
-.controls{min-height:96px;padding:9px;display:flex;align-items:center;justify-content:center;gap:8px;background:#0d0d0d;border-top:1px solid #222;z-index:20;flex-wrap:wrap}
+.controls{min-height:105px;padding:9px;display:flex;align-items:center;justify-content:center;gap:8px;background:#0d0d0d;border-top:1px solid #222;z-index:20;flex-wrap:wrap}
 button,.upload-label{border:0;outline:none;padding:11px 14px;border-radius:10px;background:#fff;color:#000;font-size:13px;font-weight:700;cursor:pointer}
 button:active,.upload-label:active{transform:scale(.97)}
 .secondary{background:#1e1e1e;color:#fff;border:1px solid #333}
 input[type=file]{display:none}
-.brightness-control{display:flex;align-items:center;gap:7px;background:#181818;border:1px solid #303030;border-radius:10px;padding:8px 10px;font-size:12px;color:#ccc}
-#brightnessSlider{width:95px;accent-color:#fff}
-#message{position:fixed;left:50%;bottom:115px;transform:translateX(-50%);z-index:200;display:none;max-width:90%;padding:10px 14px;border-radius:10px;background:#151515;border:1px solid #333;font-size:13px;text-align:center}
+.brightness-control{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;background:#181818;border:1px solid #303030;border-radius:10px;padding:9px;color:#ccc;font-size:13px}
+#brightnessSlider{width:170px;accent-color:#fff}
+#message{position:fixed;left:50%;bottom:125px;transform:translateX(-50%);z-index:200;display:none;max-width:90%;padding:10px 14px;border-radius:10px;background:#151515;border:1px solid #333;font-size:13px;text-align:center}
 .modal{position:fixed;inset:0;z-index:100;display:none;align-items:center;justify-content:center;padding:15px;background:rgba(0,0,0,.84)}
 .modal.active{display:flex}
 .modal-box{width:min(500px,100%);max-height:92vh;overflow:hidden;background:#111;border:1px solid #2a2a2a;border-radius:16px;display:flex;flex-direction:column}
@@ -46,8 +46,7 @@ input[type=file]{display:none}
 .logo{font-size:16px}
 .controls{min-height:105px;padding:8px}
 button,.upload-label{padding:10px 11px;font-size:12px}
-.brightness-control{order:5;width:100%;justify-content:center}
-#brightnessSlider{width:150px}
+#brightnessSlider{width:160px}
 }
 </style>
 </head>
@@ -55,6 +54,7 @@ button,.upload-label{padding:10px 11px;font-size:12px}
 <div class="header">
 <div class="logo">Printmotive 3D T-Shirt Designer</div>
 </div>
+
 <div id="viewer">
 <div id="loading">
 <div class="loading-title">Loading T-Shirt...</div>
@@ -62,6 +62,7 @@ button,.upload-label{padding:10px 11px;font-size:12px}
 <div id="loadingText">Preparing 3D model</div>
 </div>
 </div>
+
 <div class="controls">
 <label class="upload-label" for="designInput">Upload Design</label>
 <input id="designInput" type="file" accept="image/png,image/jpeg,image/webp">
@@ -69,10 +70,12 @@ button,.upload-label{padding:10px 11px;font-size:12px}
 <button id="resetBtn" class="secondary">Reset View</button>
 <div class="brightness-control">
 <span>Brightness</span>
-<input id="brightnessSlider" type="range" min="0.35" max="1.15" step="0.05" value="0.70">
+<input id="brightnessSlider" type="range" min=".35" max="1.15" step=".05" value=".70">
 </div>
 </div>
+
 <div id="message"></div>
+
 <div id="cropModal" class="modal">
 <div class="modal-box">
 <div class="modal-header">
@@ -84,7 +87,7 @@ button,.upload-label{padding:10px 11px;font-size:12px}
 </div>
 <div class="crop-info">
 Move and zoom your design.<br>
-Print area ratio is fixed at <b>3 : 4</b>.
+The print ratio is fixed at <b>3 : 4</b>.
 </div>
 <div class="modal-buttons">
 <button id="cancelCrop" class="secondary">Cancel</button>
@@ -92,15 +95,22 @@ Print area ratio is fixed at <b>3 : 4</b>.
 </div>
 </div>
 </div>
+
 <script>
 const MODEL_FILE="shirt.glb";
 const PRINT_RATIO=3/4;
-const PRINT_WIDTH=0.78;
+const PRINT_WIDTH=.78;
 const PRINT_HEIGHT=PRINT_WIDTH/PRINT_RATIO;
 const PRINT_X=0;
-const PRINT_Y_RATIO=.60;
-const PRINT_OFFSET=.018;
+const PRINT_Y_OFFSET=.12;
+const PRINT_FRONT_OFFSET=.025;
+const DEFAULT_CAMERA_Z=4.25;
+const DEFAULT_CAMERA_Y=.72;
+const DEFAULT_TARGET_Y=.48;
+
 let scene,camera,renderer,controls,shirt=null,printPlane=null,designTexture=null,cropper=null,designURL=null;
+let shirtBounds=null;
+
 const viewer=document.getElementById("viewer");
 const loading=document.getElementById("loading");
 const progress=document.getElementById("progress");
@@ -115,44 +125,46 @@ const removeBtn=document.getElementById("removeBtn");
 const resetBtn=document.getElementById("resetBtn");
 const brightnessSlider=document.getElementById("brightnessSlider");
 const message=document.getElementById("message");
+
 function showMessage(text){
 message.textContent=text;
 message.style.display="block";
 clearTimeout(showMessage.timer);
-showMessage.timer=setTimeout(()=>message.style.display="none",3000);
+showMessage.timer=setTimeout(()=>message.style.display="none",2800);
 }
-if(typeof THREE==="undefined"){
-loadingText.textContent="Three.js failed to load.";
-throw new Error("Three.js failed to load");
-}
+
 scene=new THREE.Scene();
 scene.background=new THREE.Color(0x080808);
-camera=new THREE.PerspectiveCamera(35,viewer.clientWidth/viewer.clientHeight,.01,100);
-camera.position.set(0,.72,3.4);
-renderer=new THREE.WebGLRenderer({antialias:true,powerPreference:"high-performance"});
+
+camera=new THREE.PerspectiveCamera(
+35,
+viewer.clientWidth/viewer.clientHeight,
+.01,
+100
+);
+camera.position.set(0,DEFAULT_CAMERA_Y,DEFAULT_CAMERA_Z);
+
+renderer=new THREE.WebGLRenderer({
+antialias:true,
+powerPreference:"high-performance"
+});
 renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,1.35));
 renderer.setSize(viewer.clientWidth,viewer.clientHeight);
 renderer.outputEncoding=THREE.sRGBEncoding;
 renderer.physicallyCorrectLights=false;
 viewer.appendChild(renderer.domElement);
+
 const ambient=new THREE.HemisphereLight(0xffffff,0x222222,.75);
 scene.add(ambient);
+
 const keyLight=new THREE.DirectionalLight(0xffffff,1.15);
 keyLight.position.set(2,4,4);
 scene.add(keyLight);
+
 const fillLight=new THREE.DirectionalLight(0xffffff,.35);
 fillLight.position.set(-3,2,2);
 scene.add(fillLight);
-if(typeof THREE.OrbitControls!=="undefined"){
-controls=new THREE.OrbitControls(camera,renderer.domElement);
-controls.enableDamping=true;
-controls.dampingFactor=.08;
-controls.enablePan=false;
-controls.minDistance=2;
-controls.maxDistance=5.5;
-controls.target.set(0,.42,0);
-controls.update();
-}
+
 function applyBrightness(value){
 const b=parseFloat(value);
 ambient.intensity=.75*b;
@@ -161,114 +173,159 @@ fillLight.intensity=.35*b;
 }
 brightnessSlider.addEventListener("input",()=>applyBrightness(brightnessSlider.value));
 applyBrightness(brightnessSlider.value);
+
+if(typeof THREE.OrbitControls!=="undefined"){
+controls=new THREE.OrbitControls(camera,renderer.domElement);
+controls.enableDamping=true;
+controls.dampingFactor=.08;
+controls.enablePan=false;
+controls.minDistance=2.5;
+controls.maxDistance=6;
+controls.target.set(0,DEFAULT_TARGET_Y,0);
+controls.update();
+}
+
 const loader=new THREE.GLTFLoader();
-loader.load(MODEL_FILE,gltf=>{
+
+loader.load(
+MODEL_FILE,
+gltf=>{
 shirt=gltf.scene;
+
 const originalBox=new THREE.Box3().setFromObject(shirt);
 const size=originalBox.getSize(new THREE.Vector3());
 const center=originalBox.getCenter(new THREE.Vector3());
+
 shirt.position.sub(center);
+
 const maxSize=Math.max(size.x,size.y,size.z);
 if(maxSize>0)shirt.scale.multiplyScalar(2.2/maxSize);
+
+/* T-shirt ko thoda upar shift */
+shirt.position.y+=.12;
+
 shirt.traverse(object=>{
 if(object.isMesh){
 object.castShadow=false;
 object.receiveShadow=false;
-if(object.material)object.material.side=THREE.FrontSide;
+if(object.material){
+object.material.side=THREE.FrontSide;
+}
 }
 });
+
 scene.add(shirt);
 shirt.updateMatrixWorld(true);
+
+calculateShirtBounds();
 createPrintPlane();
+
 loading.style.display="none";
-},xhr=>{
+},
+xhr=>{
 if(xhr.total){
 const percent=xhr.loaded/xhr.total*100;
 progress.style.width=percent.toFixed(0)+"%";
 loadingText.textContent="Loading T-Shirt "+percent.toFixed(0)+"%";
 }
-},error=>{
-console.error(error);
+},
+error=>{
+console.error("GLB ERROR:",error);
 loadingText.textContent="Could not load shirt.glb";
 showMessage("shirt.glb could not be loaded.");
-});
-function getLocalModelBounds(){
-const worldBox=new THREE.Box3().setFromObject(shirt);
-const corners=[
-new THREE.Vector3(worldBox.min.x,worldBox.min.y,worldBox.min.z),
-new THREE.Vector3(worldBox.min.x,worldBox.min.y,worldBox.max.z),
-new THREE.Vector3(worldBox.min.x,worldBox.max.y,worldBox.min.z),
-new THREE.Vector3(worldBox.min.x,worldBox.max.y,worldBox.max.z),
-new THREE.Vector3(worldBox.max.x,worldBox.min.y,worldBox.min.z),
-new THREE.Vector3(worldBox.max.x,worldBox.min.y,worldBox.max.z),
-new THREE.Vector3(worldBox.max.x,worldBox.max.y,worldBox.min.z),
-new THREE.Vector3(worldBox.max.x,worldBox.max.y,worldBox.max.z)
-];
-const localBox=new THREE.Box3();
-corners.forEach(point=>{
-shirt.worldToLocal(point);
-localBox.expandByPoint(point);
-});
-return localBox;
 }
-function getPrintPosition(){
-const box=getLocalModelBounds();
-const height=box.max.y-box.min.y;
-const y=box.min.y+height*PRINT_Y_RATIO;
-const worldFront=new THREE.Vector3(box.max.x*0+PRINT_X,y,box.max.z);
-shirt.localToWorld(worldFront);
-shirt.worldToLocal(worldFront);
-return {x:PRINT_X,y:y,z:worldFront.z+PRINT_OFFSET};
+);
+
+function calculateShirtBounds(){
+shirt.updateMatrixWorld(true);
+shirtBounds=new THREE.Box3().setFromObject(shirt);
 }
+
 function createPrintPlane(){
 if(printPlane){
-shirt.remove(printPlane);
+scene.remove(printPlane);
 if(printPlane.geometry)printPlane.geometry.dispose();
 if(printPlane.material)printPlane.material.dispose();
+printPlane=null;
 }
-const geometry=new THREE.PlaneGeometry(PRINT_WIDTH,PRINT_HEIGHT);
+
+const geometry=new THREE.PlaneGeometry(
+PRINT_WIDTH,
+PRINT_HEIGHT
+);
+
 const material=new THREE.MeshBasicMaterial({
 transparent:true,
 opacity:1,
 side:THREE.DoubleSide,
 depthWrite:false,
-depthTest:true
+depthTest:false
 });
+
 printPlane=new THREE.Mesh(geometry,material);
-const position=getPrintPosition();
-printPlane.position.set(position.x,position.y,position.z);
+
+/*
+Print plane ko shirt ka child nahi banaya.
+Isse local/world coordinate ka issue nahi hoga.
+*/
+
+scene.add(printPlane);
+updatePrintPlane();
 printPlane.visible=false;
-shirt.add(printPlane);
 }
+
 function updatePrintPlane(){
 if(!shirt||!printPlane)return;
-const position=getPrintPosition();
-printPlane.position.set(position.x,position.y,position.z);
+
+calculateShirtBounds();
+
+const box=shirtBounds;
+const width=box.max.x-box.min.x;
+const height=box.max.y-box.min.y;
+
+/*
+Chest position:
+model ki height ka approximately 61%.
+*/
+
+const x=(box.min.x+box.max.x)/2+PRINT_X;
+const y=box.min.y+height*.61+PRINT_Y_OFFSET;
+const z=box.max.z+PRINT_FRONT_OFFSET;
+
+printPlane.position.set(x,y,z);
+printPlane.rotation.set(0,0,0);
 }
+
 designInput.addEventListener("change",event=>{
 const file=event.target.files&&event.target.files[0];
 if(!file)return;
+
 if(!file.type.startsWith("image/")){
 showMessage("Please select an image file.");
 return;
 }
+
 if(designURL)URL.revokeObjectURL(designURL);
+
 designURL=URL.createObjectURL(file);
 cropImage.src=designURL;
 cropModal.classList.add("active");
+
 cropImage.onload=()=>setupCropper();
 });
+
 function setupCropper(){
 if(cropper){
 cropper.destroy();
 cropper=null;
 }
+
 cropper=new Cropper(cropImage,{
 aspectRatio:PRINT_RATIO,
 responsive:true,
 viewMode:1,
 dragMode:"move",
-autoCropArea:.85,
+autoCropArea:.80,
 background:false,
 guides:true,
 center:true,
@@ -283,78 +340,104 @@ rotatable:false,
 scalable:false
 });
 }
+
 applyCrop.addEventListener("click",()=>{
 if(!cropper){
 showMessage("Please select a design first.");
 return;
 }
+
 const canvas=cropper.getCroppedCanvas({
-width:1000,
-height:Math.round(1000/PRINT_RATIO),
+width:1200,
+height:Math.round(1200/PRINT_RATIO),
 imageSmoothingEnabled:true,
 imageSmoothingQuality:"high"
 });
+
 if(!canvas){
 showMessage("Could not crop image.");
 return;
 }
+
 const texture=new THREE.CanvasTexture(canvas);
 texture.encoding=THREE.sRGBEncoding;
 texture.minFilter=THREE.LinearFilter;
 texture.magFilter=THREE.LinearFilter;
 texture.generateMipmaps=false;
+
 if(designTexture)designTexture.dispose();
+
 designTexture=texture;
+
 if(printPlane){
 printPlane.material.map=designTexture;
+printPlane.material.transparent=true;
 printPlane.material.needsUpdate=true;
 printPlane.visible=true;
+updatePrintPlane();
 }
+
 closeCropModal();
 showMessage("Design applied to print area.");
 });
+
 function closeCropModal(){
 cropModal.classList.remove("active");
+
 if(cropper){
 cropper.destroy();
 cropper=null;
 }
+
 designInput.value="";
 }
+
 cancelCrop.addEventListener("click",closeCropModal);
 closeCrop.addEventListener("click",closeCropModal);
+
 removeBtn.addEventListener("click",()=>{
 if(printPlane){
 printPlane.visible=false;
 printPlane.material.map=null;
 printPlane.material.needsUpdate=true;
 }
+
 if(designTexture){
 designTexture.dispose();
 designTexture=null;
 }
+
 showMessage("Design removed.");
 });
+
 resetBtn.addEventListener("click",()=>{
-camera.position.set(0,.72,3.4);
+camera.position.set(0,DEFAULT_CAMERA_Y,DEFAULT_CAMERA_Z);
+
 if(controls){
-controls.target.set(0,.42,0);
+controls.target.set(0,DEFAULT_TARGET_Y,0);
 controls.update();
 }
 });
+
 window.addEventListener("resize",()=>{
 const width=viewer.clientWidth;
 const height=viewer.clientHeight;
+
 camera.aspect=width/height;
 camera.updateProjectionMatrix();
+
 renderer.setSize(width,height);
 });
+
 function animate(){
 requestAnimationFrame(animate);
+
 if(controls)controls.update();
-if(printPlane)updatePrintPlane();
+if(shirt&&printPlane)updatePrintPlane();
+
 renderer.render(scene,camera);
 }
+
 animate();
 </script>
 </body>
