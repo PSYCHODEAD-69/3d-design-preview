@@ -2,1779 +2,360 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-
-<meta
-  name="viewport"
-  content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
->
-
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
 <title>Printmotive 3D T-Shirt Designer</title>
-
-<!-- =========================================================
-     THREE.JS
-========================================================= -->
 <script src="https://cdn.jsdelivr.net/npm/three@0.132.2/build/three.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.132.2/examples/js/controls/OrbitControls.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.132.2/examples/js/loaders/GLTFLoader.js"></script>
-
-<!-- =========================================================
-     CROPPER
-========================================================= -->
-<link
-  rel="stylesheet"
-  href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css"
-/>
-
-<script
-  src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js">
-</script>
-
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
 <style>
-
-*{
-    box-sizing:border-box;
-    -webkit-tap-highlight-color:transparent;
-}
-
-html,
-body{
-    margin:0;
-    padding:0;
-    width:100%;
-    height:100%;
-    overflow:hidden;
-    background:#080808;
-    color:#fff;
-    font-family:Arial,Helvetica,sans-serif;
-}
-
-body{
-    display:flex;
-    flex-direction:column;
-}
-
-/* =========================================================
-   HEADER
-========================================================= */
-
-.header{
-    height:58px;
-    min-height:58px;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    border-bottom:1px solid rgba(255,255,255,.08);
-    background:#0d0d0d;
-    z-index:20;
-}
-
-.logo{
-    font-size:18px;
-    font-weight:800;
-    letter-spacing:.5px;
-}
-
-/* =========================================================
-   3D VIEW
-========================================================= */
-
-#viewer{
-    position:relative;
-    flex:1;
-    min-height:0;
-    overflow:hidden;
-}
-
-canvas{
-    display:block;
-    width:100%;
-    height:100%;
-}
-
-/* =========================================================
-   LOADING
-========================================================= */
-
-#loading{
-    position:absolute;
-    inset:0;
-    z-index:10;
-
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    flex-direction:column;
-
-    background:#080808;
-}
-
-.loading-title{
-    font-size:18px;
-    font-weight:700;
-    margin-bottom:12px;
-}
-
-.progress-box{
-    width:min(280px,80%);
-    height:7px;
-    background:#222;
-    border-radius:50px;
-    overflow:hidden;
-}
-
-#progress{
-    width:0%;
-    height:100%;
-    background:#fff;
-    transition:width:.15s ease;
-}
-
-#loadingText{
-    margin-top:10px;
-    font-size:13px;
-    color:#aaa;
-}
-
-/* =========================================================
-   BOTTOM CONTROLS
-========================================================= */
-
-.controls{
-    min-height:86px;
-    padding:10px;
-
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    gap:8px;
-
-    background:#0d0d0d;
-    border-top:1px solid rgba(255,255,255,.08);
-
-    z-index:20;
-}
-
-button,
-.upload-label{
-    border:0;
-    outline:none;
-
-    padding:12px 15px;
-
-    border-radius:10px;
-
-    background:#fff;
-    color:#000;
-
-    font-size:13px;
-    font-weight:700;
-
-    cursor:pointer;
-
-    transition:.15s;
-}
-
-button:active,
-.upload-label:active{
-    transform:scale(.96);
-}
-
-.secondary{
-    background:#1e1e1e;
-    color:#fff;
-    border:1px solid #333;
-}
-
-input[type="file"]{
-    display:none;
-}
-
-/* =========================================================
-   PRINT AREA GUIDE
-========================================================= */
-
-#printGuide{
-    position:absolute;
-
-    border:2px dashed rgba(255,255,255,.55);
-
-    pointer-events:none;
-
-    display:none;
-
-    z-index:5;
-
-    box-shadow:
-        0 0 0 9999px rgba(0,0,0,.10);
-}
-
-#printGuideText{
-    position:absolute;
-    top:-28px;
-    left:0;
-
-    padding:5px 8px;
-
-    border-radius:6px;
-
-    background:rgba(0,0,0,.75);
-
-    font-size:11px;
-    white-space:nowrap;
-}
-
-/* =========================================================
-   MODAL
-========================================================= */
-
-.modal{
-    position:fixed;
-    inset:0;
-
-    z-index:100;
-
-    display:none;
-
-    align-items:center;
-    justify-content:center;
-
-    padding:15px;
-
-    background:rgba(0,0,0,.82);
-}
-
-.modal.active{
-    display:flex;
-}
-
-.modal-box{
-    width:min(500px,100%);
-
-    max-height:92vh;
-
-    overflow:hidden;
-
-    background:#111;
-
-    border:1px solid #2a2a2a;
-
-    border-radius:16px;
-
-    box-shadow:0 20px 80px rgba(0,0,0,.7);
-
-    display:flex;
-    flex-direction:column;
-}
-
-.modal-header{
-    padding:15px;
-
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-
-    border-bottom:1px solid #252525;
-}
-
-.modal-title{
-    font-size:16px;
-    font-weight:800;
-}
-
-.close{
-    width:35px;
-    height:35px;
-
-    padding:0;
-
-    border-radius:50%;
-
-    background:#222;
-    color:#fff;
-
-    font-size:20px;
-}
-
-.crop-area{
-    position:relative;
-
-    width:100%;
-
-    height:min(60vh,500px);
-
-    background:#050505;
-
-    overflow:hidden;
-}
-
-.crop-area img{
-    display:block;
-
-    max-width:100%;
-}
-
-.crop-info{
-    padding:10px 15px;
-
-    color:#aaa;
-
-    font-size:12px;
-
-    line-height:1.5;
-
-    text-align:center;
-
-    border-top:1px solid #222;
-}
-
-.modal-buttons{
-    padding:12px 15px;
-
-    display:flex;
-
-    gap:8px;
-
-    border-top:1px solid #222;
-}
-
-.modal-buttons button{
-    flex:1;
-}
-
-/* =========================================================
-   MESSAGE
-========================================================= */
-
-#message{
-    position:fixed;
-
-    left:50%;
-    bottom:105px;
-
-    transform:translateX(-50%);
-
-    z-index:200;
-
-    display:none;
-
-    max-width:90%;
-
-    padding:11px 15px;
-
-    border-radius:10px;
-
-    background:#151515;
-
-    border:1px solid #333;
-
-    font-size:13px;
-
-    text-align:center;
-}
-
-/* =========================================================
-   MOBILE
-========================================================= */
-
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0;width:100%;height:100%;overflow:hidden;background:#080808;color:#fff;font-family:Arial,Helvetica,sans-serif}
+body{display:flex;flex-direction:column}
+.header{height:58px;min-height:58px;display:flex;align-items:center;justify-content:center;background:#0d0d0d;border-bottom:1px solid #222;z-index:20}
+.logo{font-size:18px;font-weight:800;letter-spacing:.4px}
+#viewer{position:relative;flex:1;min-height:0;overflow:hidden}
+canvas{display:block;width:100%;height:100%}
+#loading{position:absolute;inset:0;z-index:10;display:flex;align-items:center;justify-content:center;flex-direction:column;background:#080808}
+.loading-title{font-size:18px;font-weight:700;margin-bottom:12px}
+.progress-box{width:min(280px,80%);height:7px;background:#222;border-radius:50px;overflow:hidden}
+#progress{width:0;height:100%;background:#fff;transition:width:.15s}
+#loadingText{margin-top:10px;font-size:13px;color:#aaa}
+.controls{min-height:96px;padding:9px;display:flex;align-items:center;justify-content:center;gap:8px;background:#0d0d0d;border-top:1px solid #222;z-index:20;flex-wrap:wrap}
+button,.upload-label{border:0;outline:none;padding:11px 14px;border-radius:10px;background:#fff;color:#000;font-size:13px;font-weight:700;cursor:pointer}
+button:active,.upload-label:active{transform:scale(.97)}
+.secondary{background:#1e1e1e;color:#fff;border:1px solid #333}
+input[type=file]{display:none}
+.brightness-control{display:flex;align-items:center;gap:7px;background:#181818;border:1px solid #303030;border-radius:10px;padding:8px 10px;font-size:12px;color:#ccc}
+#brightnessSlider{width:95px;accent-color:#fff}
+#message{position:fixed;left:50%;bottom:115px;transform:translateX(-50%);z-index:200;display:none;max-width:90%;padding:10px 14px;border-radius:10px;background:#151515;border:1px solid #333;font-size:13px;text-align:center}
+.modal{position:fixed;inset:0;z-index:100;display:none;align-items:center;justify-content:center;padding:15px;background:rgba(0,0,0,.84)}
+.modal.active{display:flex}
+.modal-box{width:min(500px,100%);max-height:92vh;overflow:hidden;background:#111;border:1px solid #2a2a2a;border-radius:16px;display:flex;flex-direction:column}
+.modal-header{padding:14px 15px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #252525}
+.modal-title{font-size:16px;font-weight:800}
+.close{width:34px;height:34px;padding:0;border-radius:50%;background:#222;color:#fff;font-size:20px}
+.crop-area{position:relative;width:100%;height:min(60vh,500px);background:#050505;overflow:hidden}
+.crop-area img{display:block;max-width:100%}
+.crop-info{padding:10px 15px;color:#aaa;font-size:12px;line-height:1.5;text-align:center;border-top:1px solid #222}
+.modal-buttons{padding:12px 15px;display:flex;gap:8px;border-top:1px solid #222}
+.modal-buttons button{flex:1}
 @media(max-width:600px){
-
-    .controls{
-        min-height:78px;
-        padding:8px;
-    }
-
-    button,
-    .upload-label{
-        padding:11px 10px;
-        font-size:12px;
-    }
-
-    .logo{
-        font-size:16px;
-    }
-
+.header{height:55px;min-height:55px}
+.logo{font-size:16px}
+.controls{min-height:105px;padding:8px}
+button,.upload-label{padding:10px 11px;font-size:12px}
+.brightness-control{order:5;width:100%;justify-content:center}
+#brightnessSlider{width:150px}
 }
-
 </style>
 </head>
-
 <body>
-
-<!-- =========================================================
-     HEADER
-========================================================= -->
-
 <div class="header">
-    <div class="logo">
-        Printmotive 3D T-Shirt Designer
-    </div>
+<div class="logo">Printmotive 3D T-Shirt Designer</div>
 </div>
-
-
-<!-- =========================================================
-     3D VIEWER
-========================================================= -->
-
 <div id="viewer">
-
-    <div id="loading">
-
-        <div class="loading-title">
-            Loading T-Shirt...
-        </div>
-
-        <div class="progress-box">
-            <div id="progress"></div>
-        </div>
-
-        <div id="loadingText">
-            Preparing 3D model
-        </div>
-
-    </div>
-
-    <!-- PRINT GUIDE -->
-    <div id="printGuide">
-        <div id="printGuideText">
-            PRINT AREA
-        </div>
-    </div>
-
+<div id="loading">
+<div class="loading-title">Loading T-Shirt...</div>
+<div class="progress-box"><div id="progress"></div></div>
+<div id="loadingText">Preparing 3D model</div>
 </div>
-
-
-<!-- =========================================================
-     CONTROLS
-========================================================= -->
-
+</div>
 <div class="controls">
-
-    <label class="upload-label" for="designInput">
-        Upload Design
-    </label>
-
-    <input
-        id="designInput"
-        type="file"
-        accept="image/png,image/jpeg,image/webp"
-    >
-
-    <button
-        id="removeBtn"
-        class="secondary"
-    >
-        Remove
-    </button>
-
-    <button
-        id="resetBtn"
-        class="secondary"
-    >
-        Reset View
-    </button>
-
+<label class="upload-label" for="designInput">Upload Design</label>
+<input id="designInput" type="file" accept="image/png,image/jpeg,image/webp">
+<button id="removeBtn" class="secondary">Remove</button>
+<button id="resetBtn" class="secondary">Reset View</button>
+<div class="brightness-control">
+<span>Brightness</span>
+<input id="brightnessSlider" type="range" min="0.35" max="1.15" step="0.05" value="0.70">
 </div>
-
-
-<!-- =========================================================
-     MESSAGE
-========================================================= -->
-
+</div>
 <div id="message"></div>
-
-
-<!-- =========================================================
-     CROPPER MODAL
-========================================================= -->
-
-<div
-    id="cropModal"
-    class="modal"
->
-
-    <div class="modal-box">
-
-        <div class="modal-header">
-
-            <div class="modal-title">
-                Adjust Your Design
-            </div>
-
-            <button
-                id="closeCrop"
-                class="close"
-            >
-                ×
-            </button>
-
-        </div>
-
-
-        <div class="crop-area">
-
-            <img
-                id="cropImage"
-                alt="Design"
-            >
-
-        </div>
-
-
-        <div class="crop-info">
-
-            Move the design and zoom it as needed.
-            <br>
-
-            The print box keeps the fixed
-            <b>3 : 4</b> print ratio.
-
-        </div>
-
-
-        <div class="modal-buttons">
-
-            <button
-                id="cancelCrop"
-                class="secondary"
-            >
-                Cancel
-            </button>
-
-            <button
-                id="applyCrop"
-            >
-                Apply Design
-            </button>
-
-        </div>
-
-    </div>
-
+<div id="cropModal" class="modal">
+<div class="modal-box">
+<div class="modal-header">
+<div class="modal-title">Adjust Your Design</div>
+<button id="closeCrop" class="close">×</button>
 </div>
-
-
+<div class="crop-area">
+<img id="cropImage" alt="Design">
+</div>
+<div class="crop-info">
+Move and zoom your design.<br>
+Print area ratio is fixed at <b>3 : 4</b>.
+</div>
+<div class="modal-buttons">
+<button id="cancelCrop" class="secondary">Cancel</button>
+<button id="applyCrop">Apply Design</button>
+</div>
+</div>
+</div>
 <script>
-
-/* =========================================================
-   SETTINGS
-========================================================= */
-
-/*
-   IMPORTANT:
-
-   Your actual printing ratio goes here.
-
-   Current ratio = 3 : 4
-
-   Examples:
-
-   3 x 4  => 3 / 4
-   4 x 5  => 4 / 5
-   10 x 12 => 10 / 12
-   12 x 16 => 12 / 16
-
-   Change ONLY this value if your actual ratio is different.
-*/
-
-const PRINT_RATIO = 3 / 4;
-
-
-/*
-   Physical-looking print area on the 3D shirt.
-
-   width  = horizontal size
-   height = vertical size
-
-   Because PRINT_RATIO is fixed, height is calculated
-   automatically from width.
-*/
-
-const PRINT_WIDTH = 0.78;
-
-const PRINT_HEIGHT =
-    PRINT_WIDTH / PRINT_RATIO;
-
-
-/*
-   Position of the print area.
-
-   These values are based on the normalized shirt model.
-
-   If you later want to move the print area up/down,
-   only change PRINT_Y.
-
-   If you want left/right:
-   change PRINT_X.
-*/
-
-const PRINT_X = 0.0;
-
-const PRINT_Y = 0.42;
-
-
-/*
-   Small distance in front of shirt.
-
-   This prevents z-fighting.
-*/
-
-const PRINT_OFFSET = 0.015;
-
-
-/*
-   Model file.
-
-   Keep shirt.glb in the SAME folder as index.html.
-*/
-
-const MODEL_FILE = "shirt.glb";
-
-
-/* =========================================================
-   GLOBALS
-========================================================= */
-
-let scene;
-let camera;
-let renderer;
-let controls;
-
-let shirt = null;
-
-let printPlane = null;
-
-let designTexture = null;
-
-let cropper = null;
-
-let originalDesignURL = null;
-
-
-/* =========================================================
-   DOM
-========================================================= */
-
-const viewer =
-    document.getElementById("viewer");
-
-const loading =
-    document.getElementById("loading");
-
-const progress =
-    document.getElementById("progress");
-
-const loadingText =
-    document.getElementById("loadingText");
-
-const designInput =
-    document.getElementById("designInput");
-
-const cropModal =
-    document.getElementById("cropModal");
-
-const cropImage =
-    document.getElementById("cropImage");
-
-const applyCrop =
-    document.getElementById("applyCrop");
-
-const cancelCrop =
-    document.getElementById("cancelCrop");
-
-const closeCrop =
-    document.getElementById("closeCrop");
-
-const removeBtn =
-    document.getElementById("removeBtn");
-
-const resetBtn =
-    document.getElementById("resetBtn");
-
-const message =
-    document.getElementById("message");
-
-
-/* =========================================================
-   MESSAGE
-========================================================= */
-
+const MODEL_FILE="shirt.glb";
+const PRINT_RATIO=3/4;
+const PRINT_WIDTH=0.78;
+const PRINT_HEIGHT=PRINT_WIDTH/PRINT_RATIO;
+const PRINT_X=0;
+const PRINT_Y_RATIO=.60;
+const PRINT_OFFSET=.018;
+let scene,camera,renderer,controls,shirt=null,printPlane=null,designTexture=null,cropper=null,designURL=null;
+const viewer=document.getElementById("viewer");
+const loading=document.getElementById("loading");
+const progress=document.getElementById("progress");
+const loadingText=document.getElementById("loadingText");
+const designInput=document.getElementById("designInput");
+const cropModal=document.getElementById("cropModal");
+const cropImage=document.getElementById("cropImage");
+const applyCrop=document.getElementById("applyCrop");
+const cancelCrop=document.getElementById("cancelCrop");
+const closeCrop=document.getElementById("closeCrop");
+const removeBtn=document.getElementById("removeBtn");
+const resetBtn=document.getElementById("resetBtn");
+const brightnessSlider=document.getElementById("brightnessSlider");
+const message=document.getElementById("message");
 function showMessage(text){
-
-    message.textContent = text;
-
-    message.style.display = "block";
-
-    clearTimeout(showMessage.timer);
-
-    showMessage.timer =
-        setTimeout(() => {
-
-            message.style.display = "none";
-
-        }, 3000);
+message.textContent=text;
+message.style.display="block";
+clearTimeout(showMessage.timer);
+showMessage.timer=setTimeout(()=>message.style.display="none",3000);
 }
-
-
-/* =========================================================
-   CHECK THREE.JS
-========================================================= */
-
-if(
-    typeof THREE === "undefined"
-){
-
-    loadingText.textContent =
-        "Three.js failed to load.";
-
-    throw new Error(
-        "Three.js failed to load."
-    );
+if(typeof THREE==="undefined"){
+loadingText.textContent="Three.js failed to load.";
+throw new Error("Three.js failed to load");
 }
-
-
-/* =========================================================
-   SCENE
-========================================================= */
-
-scene =
-    new THREE.Scene();
-
-scene.background =
-    new THREE.Color(0x080808);
-
-
-/* =========================================================
-   CAMERA
-========================================================= */
-
-camera =
-    new THREE.PerspectiveCamera(
-        35,
-        viewer.clientWidth /
-        viewer.clientHeight,
-        0.01,
-        100
-    );
-
-camera.position.set(
-    0,
-    0.75,
-    3.4
-);
-
-
-/* =========================================================
-   RENDERER
-========================================================= */
-
-renderer =
-    new THREE.WebGLRenderer({
-        antialias:true,
-        alpha:false,
-        powerPreference:"high-performance"
-    });
-
-renderer.setPixelRatio(
-    Math.min(
-        window.devicePixelRatio || 1,
-        1.35
-    )
-);
-
-renderer.setSize(
-    viewer.clientWidth,
-    viewer.clientHeight
-);
-
-renderer.outputEncoding =
-    THREE.sRGBEncoding;
-
-renderer.shadowMap.enabled = false;
-
-viewer.appendChild(
-    renderer.domElement
-);
-
-
-/* =========================================================
-   LIGHTING
-========================================================= */
-
-const ambient =
-    new THREE.HemisphereLight(
-        0xffffff,
-        0x333333,
-        1.8
-    );
-
+scene=new THREE.Scene();
+scene.background=new THREE.Color(0x080808);
+camera=new THREE.PerspectiveCamera(35,viewer.clientWidth/viewer.clientHeight,.01,100);
+camera.position.set(0,.72,3.4);
+renderer=new THREE.WebGLRenderer({antialias:true,powerPreference:"high-performance"});
+renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,1.35));
+renderer.setSize(viewer.clientWidth,viewer.clientHeight);
+renderer.outputEncoding=THREE.sRGBEncoding;
+renderer.physicallyCorrectLights=false;
+viewer.appendChild(renderer.domElement);
+const ambient=new THREE.HemisphereLight(0xffffff,0x222222,.75);
 scene.add(ambient);
-
-
-const keyLight =
-    new THREE.DirectionalLight(
-        0xffffff,
-        2.2
-    );
-
-keyLight.position.set(
-    2,
-    4,
-    4
-);
-
+const keyLight=new THREE.DirectionalLight(0xffffff,1.15);
+keyLight.position.set(2,4,4);
 scene.add(keyLight);
-
-
-const fillLight =
-    new THREE.DirectionalLight(
-        0xffffff,
-        1.0
-    );
-
-fillLight.position.set(
-    -3,
-    2,
-    2
-);
-
+const fillLight=new THREE.DirectionalLight(0xffffff,.35);
+fillLight.position.set(-3,2,2);
 scene.add(fillLight);
-
-
-/* =========================================================
-   ORBIT CONTROLS
-========================================================= */
-
-if(
-    typeof THREE.OrbitControls !==
-    "undefined"
-){
-
-    controls =
-        new THREE.OrbitControls(
-            camera,
-            renderer.domElement
-        );
-
-    controls.enableDamping = true;
-
-    controls.dampingFactor = 0.08;
-
-    controls.enablePan = false;
-
-    controls.minDistance = 2.0;
-
-    controls.maxDistance = 5.5;
-
-    controls.target.set(
-        0,
-        0.45,
-        0
-    );
-
-    controls.update();
-
-}else{
-
-    showMessage(
-        "OrbitControls could not load."
-    );
-
+if(typeof THREE.OrbitControls!=="undefined"){
+controls=new THREE.OrbitControls(camera,renderer.domElement);
+controls.enableDamping=true;
+controls.dampingFactor=.08;
+controls.enablePan=false;
+controls.minDistance=2;
+controls.maxDistance=5.5;
+controls.target.set(0,.42,0);
+controls.update();
 }
-
-
-/* =========================================================
-   LOAD SHIRT
-========================================================= */
-
-const loader =
-    new THREE.GLTFLoader();
-
-
-loader.load(
-
-    MODEL_FILE,
-
-    function(gltf){
-
-        shirt = gltf.scene;
-
-
-        /* -------------------------------------------------
-           NORMALIZE MODEL
-        ------------------------------------------------- */
-
-        const box =
-            new THREE.Box3()
-            .setFromObject(shirt);
-
-        const size =
-            box.getSize(
-                new THREE.Vector3()
-            );
-
-        const center =
-            box.getCenter(
-                new THREE.Vector3()
-            );
-
-
-        shirt.position.sub(center);
-
-
-        const maxSize =
-            Math.max(
-                size.x,
-                size.y,
-                size.z
-            );
-
-
-        const targetSize = 2.2;
-
-
-        if(maxSize > 0){
-
-            shirt.scale.multiplyScalar(
-                targetSize / maxSize
-            );
-
-        }
-
-
-        /* -------------------------------------------------
-           MATERIAL SETTINGS
-        ------------------------------------------------- */
-
-        shirt.traverse(
-            function(object){
-
-                if(
-                    object.isMesh
-                ){
-
-                    object.castShadow = false;
-
-                    object.receiveShadow = false;
-
-                    if(
-                        object.material
-                    ){
-
-                        object.material
-                            .side =
-                            THREE.FrontSide;
-
-                    }
-
-                }
-
-            }
-        );
-
-
-        scene.add(shirt);
-
-
-        /*
-           Create our own PRINT PLANE.
-
-           This does NOT replace the shirt material.
-
-           Therefore uploaded design cannot cover
-           the whole T-shirt.
-        */
-
-        createPrintPlane();
-
-
-        loading.style.display =
-            "none";
-
-    },
-
-    function(xhr){
-
-        if(xhr.total){
-
-            const percent =
-                (xhr.loaded /
-                 xhr.total) * 100;
-
-            progress.style.width =
-                percent.toFixed(0) + "%";
-
-            loadingText.textContent =
-                "Loading T-Shirt " +
-                percent.toFixed(0) +
-                "%";
-
-        }
-
-    },
-
-    function(error){
-
-        console.error(
-            "GLB loading error:",
-            error
-        );
-
-        loadingText.textContent =
-            "Could not load shirt.glb";
-
-        showMessage(
-            "shirt.glb could not be loaded."
-        );
-
-    }
-
-);
-
-
-/* =========================================================
-   CREATE PRINT PLANE
-========================================================= */
-
+function applyBrightness(value){
+const b=parseFloat(value);
+ambient.intensity=.75*b;
+keyLight.intensity=1.15*b;
+fillLight.intensity=.35*b;
+}
+brightnessSlider.addEventListener("input",()=>applyBrightness(brightnessSlider.value));
+applyBrightness(brightnessSlider.value);
+const loader=new THREE.GLTFLoader();
+loader.load(MODEL_FILE,gltf=>{
+shirt=gltf.scene;
+const originalBox=new THREE.Box3().setFromObject(shirt);
+const size=originalBox.getSize(new THREE.Vector3());
+const center=originalBox.getCenter(new THREE.Vector3());
+shirt.position.sub(center);
+const maxSize=Math.max(size.x,size.y,size.z);
+if(maxSize>0)shirt.scale.multiplyScalar(2.2/maxSize);
+shirt.traverse(object=>{
+if(object.isMesh){
+object.castShadow=false;
+object.receiveShadow=false;
+if(object.material)object.material.side=THREE.FrontSide;
+}
+});
+scene.add(shirt);
+shirt.updateMatrixWorld(true);
+createPrintPlane();
+loading.style.display="none";
+},xhr=>{
+if(xhr.total){
+const percent=xhr.loaded/xhr.total*100;
+progress.style.width=percent.toFixed(0)+"%";
+loadingText.textContent="Loading T-Shirt "+percent.toFixed(0)+"%";
+}
+},error=>{
+console.error(error);
+loadingText.textContent="Could not load shirt.glb";
+showMessage("shirt.glb could not be loaded.");
+});
+function getLocalModelBounds(){
+const worldBox=new THREE.Box3().setFromObject(shirt);
+const corners=[
+new THREE.Vector3(worldBox.min.x,worldBox.min.y,worldBox.min.z),
+new THREE.Vector3(worldBox.min.x,worldBox.min.y,worldBox.max.z),
+new THREE.Vector3(worldBox.min.x,worldBox.max.y,worldBox.min.z),
+new THREE.Vector3(worldBox.min.x,worldBox.max.y,worldBox.max.z),
+new THREE.Vector3(worldBox.max.x,worldBox.min.y,worldBox.min.z),
+new THREE.Vector3(worldBox.max.x,worldBox.min.y,worldBox.max.z),
+new THREE.Vector3(worldBox.max.x,worldBox.max.y,worldBox.min.z),
+new THREE.Vector3(worldBox.max.x,worldBox.max.y,worldBox.max.z)
+];
+const localBox=new THREE.Box3();
+corners.forEach(point=>{
+shirt.worldToLocal(point);
+localBox.expandByPoint(point);
+});
+return localBox;
+}
+function getPrintPosition(){
+const box=getLocalModelBounds();
+const height=box.max.y-box.min.y;
+const y=box.min.y+height*PRINT_Y_RATIO;
+const worldFront=new THREE.Vector3(box.max.x*0+PRINT_X,y,box.max.z);
+shirt.localToWorld(worldFront);
+shirt.worldToLocal(worldFront);
+return {x:PRINT_X,y:y,z:worldFront.z+PRINT_OFFSET};
+}
 function createPrintPlane(){
-
-    /*
-       Remove old print plane if any.
-    */
-
-    if(printPlane){
-
-        if(printPlane.parent){
-
-            printPlane.parent.remove(
-                printPlane
-            );
-
-        }
-
-        if(
-            printPlane.geometry
-        ){
-
-            printPlane.geometry.dispose();
-
-        }
-
-        if(
-            printPlane.material
-        ){
-
-            printPlane.material.dispose();
-
-        }
-
-        printPlane = null;
-
-    }
-
-
-    /*
-       Fixed ratio plane.
-
-       IMPORTANT:
-
-       width is fixed.
-       height is automatically calculated.
-
-       So design always remains in the
-       same printing ratio.
-    */
-
-    const geometry =
-        new THREE.PlaneGeometry(
-            PRINT_WIDTH,
-            PRINT_HEIGHT
-        );
-
-
-    const material =
-        new THREE.MeshBasicMaterial({
-
-            transparent:true,
-
-            opacity:1,
-
-            side:
-                THREE.DoubleSide,
-
-            depthWrite:false,
-
-            depthTest:true
-
-        });
-
-
-    printPlane =
-        new THREE.Mesh(
-            geometry,
-            material
-        );
-
-
-    /*
-       Put print plane in front of
-       the T-shirt.
-
-       The shirt model is normalized
-       around the center.
-    */
-
-    printPlane.position.set(
-        PRINT_X,
-        PRINT_Y,
-        getFrontZ() + PRINT_OFFSET
-    );
-
-
-    /*
-       Plane faces the camera/front.
-
-       Front of the model is assumed +Z.
-    */
-
-    printPlane.rotation.set(
-        0,
-        0,
-        0
-    );
-
-
-    /*
-       Initially invisible.
-    */
-
-    printPlane.visible = false;
-
-
-    shirt.add(
-        printPlane
-    );
-
+if(printPlane){
+shirt.remove(printPlane);
+if(printPlane.geometry)printPlane.geometry.dispose();
+if(printPlane.material)printPlane.material.dispose();
 }
-
-
-/* =========================================================
-   FIND FRONT OF SHIRT
-========================================================= */
-
-function getFrontZ(){
-
-    if(!shirt){
-
-        return 0.5;
-
-    }
-
-
-    const box =
-        new THREE.Box3()
-        .setFromObject(shirt);
-
-
-    /*
-       We don't use the absolute max Z directly.
-
-       We use a percentage of model depth
-       so the print plane remains close to
-       the shirt front.
-    */
-
-    const minZ = box.min.z;
-
-    const maxZ = box.max.z;
-
-    const depth =
-        maxZ - minZ;
-
-
-    /*
-       Front surface.
-
-       88% toward the front.
-    */
-
-    return minZ +
-        depth * 0.88;
-
+const geometry=new THREE.PlaneGeometry(PRINT_WIDTH,PRINT_HEIGHT);
+const material=new THREE.MeshBasicMaterial({
+transparent:true,
+opacity:1,
+side:THREE.DoubleSide,
+depthWrite:false,
+depthTest:true
+});
+printPlane=new THREE.Mesh(geometry,material);
+const position=getPrintPosition();
+printPlane.position.set(position.x,position.y,position.z);
+printPlane.visible=false;
+shirt.add(printPlane);
 }
-
-
-/* =========================================================
-   FILE UPLOAD
-========================================================= */
-
-designInput.addEventListener(
-    "change",
-    function(event){
-
-        const file =
-            event.target.files &&
-            event.target.files[0];
-
-
-        if(!file){
-
-            return;
-
-        }
-
-
-        if(
-            !file.type.startsWith(
-                "image/"
-            )
-        ){
-
-            showMessage(
-                "Please select an image file."
-            );
-
-            return;
-
-        }
-
-
-        /*
-           Remove previous URL.
-        */
-
-        if(originalDesignURL){
-
-            URL.revokeObjectURL(
-                originalDesignURL
-            );
-
-        }
-
-
-        originalDesignURL =
-            URL.createObjectURL(
-                file
-            );
-
-
-        cropImage.src =
-            originalDesignURL;
-
-
-        cropModal.classList.add(
-            "active"
-        );
-
-
-        /*
-           Wait until image is loaded.
-        */
-
-        cropImage.onload =
-            function(){
-
-                setupCropper();
-
-            };
-
-    }
-);
-
-
-/* =========================================================
-   SETUP CROPPER
-========================================================= */
-
-function setupCropper(){
-
-    /*
-       Destroy previous cropper.
-    */
-
-    if(cropper){
-
-        cropper.destroy();
-
-        cropper = null;
-
-    }
-
-
-    cropper =
-        new Cropper(
-            cropImage,
-            {
-
-                /*
-                   THIS IS THE MOST IMPORTANT PART.
-
-                   User cannot make a rectangular
-                   crop with a different ratio.
-
-                   It ALWAYS stays 3 : 4.
-                */
-
-                aspectRatio:
-                    PRINT_RATIO,
-
-
-                /*
-                   Crop box can be resized,
-                   but only while maintaining
-                   the fixed ratio.
-                */
-
-                responsive:true,
-
-                viewMode:1,
-
-                dragMode:"move",
-
-                autoCropArea:0.85,
-
-                background:false,
-
-                guides:true,
-
-                center:true,
-
-                highlight:false,
-
-                cropBoxMovable:false,
-
-                cropBoxResizable:true,
-
-                zoomable:true,
-
-                zoomOnWheel:true,
-
-                zoomOnTouch:true,
-
-                movable:true,
-
-                rotatable:false,
-
-                scalable:false,
-
-                ready:function(){
-
-                    /*
-                       Ensure crop box has
-                       correct ratio.
-                    */
-
-                    try{
-
-                        this.cropper.setAspectRatio(
-                            PRINT_RATIO
-                        );
-
-                    }catch(e){}
-
-                }
-
-            }
-        );
-
-}
-
-
-/* =========================================================
-   APPLY CROP
-========================================================= */
-
-applyCrop.addEventListener(
-    "click",
-    function(){
-
-        if(!cropper){
-
-            showMessage(
-                "Please select a design first."
-            );
-
-            return;
-
-        }
-
-
-        /*
-           Get cropped image.
-
-           Because CropperJS uses the same
-           PRINT_RATIO, this output already
-           has the correct ratio.
-        */
-
-        const canvas =
-            cropper.getCroppedCanvas({
-
-                width:1000,
-
-                height:
-                    Math.round(
-                        1000 /
-                        PRINT_RATIO
-                    ),
-
-                imageSmoothingEnabled:true,
-
-                imageSmoothingQuality:
-                    "high"
-
-            });
-
-
-        if(!canvas){
-
-            showMessage(
-                "Could not crop image."
-            );
-
-            return;
-
-        }
-
-
-        /*
-           Convert canvas to texture.
-        */
-
-        const texture =
-            new THREE.CanvasTexture(
-                canvas
-            );
-
-
-        texture.encoding =
-            THREE.sRGBEncoding;
-
-        texture.minFilter =
-            THREE.LinearFilter;
-
-        texture.magFilter =
-            THREE.LinearFilter;
-
-        texture.generateMipmaps =
-            false;
-
-
-        /*
-           Remove old texture.
-        */
-
-        if(designTexture){
-
-            designTexture.dispose();
-
-        }
-
-
-        designTexture =
-            texture;
-
-
-        /*
-           Apply only to PRINT PLANE.
-
-           NEVER touch shirt materials.
-        */
-
-        if(
-            printPlane &&
-            printPlane.material
-        ){
-
-            printPlane.material.map =
-                designTexture;
-
-            printPlane.material
-                .needsUpdate = true;
-
-            printPlane.visible =
-                true;
-
-        }
-
-
-        /*
-           Close modal.
-        */
-
-        closeCropModal();
-
-
-        showMessage(
-            "Design applied to print area."
-        );
-
-    }
-);
-
-
-/* =========================================================
-   CLOSE CROP MODAL
-========================================================= */
-
-function closeCropModal(){
-
-    cropModal.classList.remove(
-        "active"
-    );
-
-
-    if(cropper){
-
-        cropper.destroy();
-
-        cropper = null;
-
-    }
-
-
-    designInput.value = "";
-
-}
-
-
-/* =========================================================
-   CANCEL
-========================================================= */
-
-cancelCrop.addEventListener(
-    "click",
-    function(){
-
-        closeCropModal();
-
-    }
-);
-
-
-closeCrop.addEventListener(
-    "click",
-    function(){
-
-        closeCropModal();
-
-    }
-);
-
-
-/* =========================================================
-   REMOVE DESIGN
-========================================================= */
-
-removeBtn.addEventListener(
-    "click",
-    function(){
-
-        if(printPlane){
-
-            printPlane.visible =
-                false;
-
-            if(
-                printPlane.material
-            ){
-
-                printPlane.material.map =
-                    null;
-
-                printPlane.material
-                    .needsUpdate = true;
-
-            }
-
-        }
-
-
-        if(designTexture){
-
-            designTexture.dispose();
-
-            designTexture = null;
-
-        }
-
-
-        showMessage(
-            "Design removed."
-        );
-
-    }
-);
-
-
-/* =========================================================
-   RESET CAMERA
-========================================================= */
-
-resetBtn.addEventListener(
-    "click",
-    function(){
-
-        camera.position.set(
-            0,
-            0.75,
-            3.4
-        );
-
-
-        if(controls){
-
-            controls.target.set(
-                0,
-                0.45,
-                0
-            );
-
-            controls.update();
-
-        }
-
-    }
-);
-
-
-/* =========================================================
-   RESIZE
-========================================================= */
-
-window.addEventListener(
-    "resize",
-    function(){
-
-        const width =
-            viewer.clientWidth;
-
-        const height =
-            viewer.clientHeight;
-
-
-        camera.aspect =
-            width / height;
-
-        camera.updateProjectionMatrix();
-
-
-        renderer.setSize(
-            width,
-            height
-        );
-
-    }
-);
-
-
-/* =========================================================
-   RENDER LOOP
-========================================================= */
-
-function animate(){
-
-    requestAnimationFrame(
-        animate
-    );
-
-
-    if(controls){
-
-        controls.update();
-
-    }
-
-
-    renderer.render(
-        scene,
-        camera
-    );
-
-}
-
-
-animate();
-
-
-/* =========================================================
-   KEEP PRINT PLANE IN CORRECT POSITION
-========================================================= */
-
 function updatePrintPlane(){
-
-    if(
-        !shirt ||
-        !printPlane
-    ){
-
-        return;
-
-    }
-
-
-    /*
-       Keep the print plane slightly
-       in front of the shirt.
-    */
-
-    printPlane.position.x =
-        PRINT_X;
-
-    printPlane.position.y =
-        PRINT_Y;
-
-    printPlane.position.z =
-        getFrontZ() +
-        PRINT_OFFSET;
-
+if(!shirt||!printPlane)return;
+const position=getPrintPosition();
+printPlane.position.set(position.x,position.y,position.z);
 }
-
-
-/* =========================================================
-   UPDATE PRINT PLANE
-========================================================= */
-
-setInterval(
-    updatePrintPlane,
-    500
-);
-
-
-/* =========================================================
-   DEBUG PRINT AREA
-========================================================= */
-
-/*
-   Agar kabhi print area ki position change
-   karni ho to:
-
-   PRINT_X
-   PRINT_Y
-   PRINT_WIDTH
-
-   ko upar change karna.
-
-   Example:
-
-   PRINT_Y = 0.55;
-
-   => print area thoda UP
-
-   PRINT_Y = 0.30;
-
-   => print area thoda DOWN
-
-   PRINT_X = 0.10;
-
-   => right side
-
-   PRINT_X = -0.10;
-
-   => left side
-*/
-
-
+designInput.addEventListener("change",event=>{
+const file=event.target.files&&event.target.files[0];
+if(!file)return;
+if(!file.type.startsWith("image/")){
+showMessage("Please select an image file.");
+return;
+}
+if(designURL)URL.revokeObjectURL(designURL);
+designURL=URL.createObjectURL(file);
+cropImage.src=designURL;
+cropModal.classList.add("active");
+cropImage.onload=()=>setupCropper();
+});
+function setupCropper(){
+if(cropper){
+cropper.destroy();
+cropper=null;
+}
+cropper=new Cropper(cropImage,{
+aspectRatio:PRINT_RATIO,
+responsive:true,
+viewMode:1,
+dragMode:"move",
+autoCropArea:.85,
+background:false,
+guides:true,
+center:true,
+highlight:false,
+cropBoxMovable:false,
+cropBoxResizable:true,
+zoomable:true,
+zoomOnWheel:true,
+zoomOnTouch:true,
+movable:true,
+rotatable:false,
+scalable:false
+});
+}
+applyCrop.addEventListener("click",()=>{
+if(!cropper){
+showMessage("Please select a design first.");
+return;
+}
+const canvas=cropper.getCroppedCanvas({
+width:1000,
+height:Math.round(1000/PRINT_RATIO),
+imageSmoothingEnabled:true,
+imageSmoothingQuality:"high"
+});
+if(!canvas){
+showMessage("Could not crop image.");
+return;
+}
+const texture=new THREE.CanvasTexture(canvas);
+texture.encoding=THREE.sRGBEncoding;
+texture.minFilter=THREE.LinearFilter;
+texture.magFilter=THREE.LinearFilter;
+texture.generateMipmaps=false;
+if(designTexture)designTexture.dispose();
+designTexture=texture;
+if(printPlane){
+printPlane.material.map=designTexture;
+printPlane.material.needsUpdate=true;
+printPlane.visible=true;
+}
+closeCropModal();
+showMessage("Design applied to print area.");
+});
+function closeCropModal(){
+cropModal.classList.remove("active");
+if(cropper){
+cropper.destroy();
+cropper=null;
+}
+designInput.value="";
+}
+cancelCrop.addEventListener("click",closeCropModal);
+closeCrop.addEventListener("click",closeCropModal);
+removeBtn.addEventListener("click",()=>{
+if(printPlane){
+printPlane.visible=false;
+printPlane.material.map=null;
+printPlane.material.needsUpdate=true;
+}
+if(designTexture){
+designTexture.dispose();
+designTexture=null;
+}
+showMessage("Design removed.");
+});
+resetBtn.addEventListener("click",()=>{
+camera.position.set(0,.72,3.4);
+if(controls){
+controls.target.set(0,.42,0);
+controls.update();
+}
+});
+window.addEventListener("resize",()=>{
+const width=viewer.clientWidth;
+const height=viewer.clientHeight;
+camera.aspect=width/height;
+camera.updateProjectionMatrix();
+renderer.setSize(width,height);
+});
+function animate(){
+requestAnimationFrame(animate);
+if(controls)controls.update();
+if(printPlane)updatePrintPlane();
+renderer.render(scene,camera);
+}
+animate();
 </script>
-
 </body>
 </html>
