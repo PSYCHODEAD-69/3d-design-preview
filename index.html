@@ -1,0 +1,1149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+<title>Printmotive 3D T-Shirt Designer</title>
+
+<!-- THREE.JS -->
+<script src="https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.180.0/examples/js/controls/OrbitControls.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.180.0/examples/js/loaders/GLTFLoader.js"></script>
+
+<!-- CROPPER -->
+<script src="https://cdn.jsdelivr.net/npm/cropperjs@1.6.2/dist/cropper.min.js"></script>
+<link rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/cropperjs@1.6.2/dist/cropper.min.css">
+
+<style>
+
+* {
+    box-sizing: border-box;
+}
+
+html,
+body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    min-height: 100%;
+    background: #080a0d;
+    color: white;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+body {
+    overflow-x: hidden;
+}
+
+.app {
+    width: 100%;
+    max-width: 900px;
+    margin: auto;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* HEADER */
+
+.header {
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 16px;
+
+    background: #111419;
+    border-bottom: 1px solid #272b32;
+}
+
+.logo {
+    font-size: 19px;
+    font-weight: 800;
+}
+
+.badge {
+    font-size: 11px;
+    color: #aeb5c0;
+    background: #20242b;
+    padding: 6px 9px;
+    border-radius: 20px;
+}
+
+/* VIEWER */
+
+.viewer {
+    position: relative;
+    width: 100%;
+    height: 62vh;
+    min-height: 430px;
+
+    background:
+        radial-gradient(
+            circle at 50% 35%,
+            #30353d 0%,
+            #15181d 40%,
+            #080a0d 75%
+        );
+
+    overflow: hidden;
+}
+
+#canvas {
+    width: 100%;
+    height: 100%;
+    display: block;
+}
+
+.hint {
+    position: absolute;
+
+    left: 50%;
+    bottom: 14px;
+
+    transform: translateX(-50%);
+
+    padding: 8px 13px;
+
+    background: rgba(0,0,0,.65);
+
+    border: 1px solid rgba(255,255,255,.08);
+
+    border-radius: 30px;
+
+    font-size: 12px;
+
+    color: #dce1e8;
+
+    white-space: nowrap;
+
+    pointer-events: none;
+}
+
+/* CONTROL PANEL */
+
+.panel {
+    padding: 16px;
+
+    background: #111419;
+
+    border-top: 1px solid #272b32;
+}
+
+.buttons {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.btn {
+    border: none;
+
+    padding: 12px 17px;
+
+    border-radius: 12px;
+
+    font-size: 14px;
+
+    font-weight: 700;
+
+    cursor: pointer;
+
+    background: white;
+
+    color: #111;
+}
+
+.btn.secondary {
+    background: #252a31;
+    color: white;
+}
+
+.btn:active {
+    transform: scale(.97);
+}
+
+input[type="file"] {
+    display: none;
+}
+
+.status {
+    margin-top: 11px;
+
+    font-size: 12px;
+
+    color: #aeb6c3;
+
+    line-height: 1.5;
+}
+
+.note {
+    margin-top: 7px;
+
+    font-size: 11px;
+
+    color: #747d89;
+}
+
+/* CROP MODAL */
+
+.modal {
+    position: fixed;
+
+    inset: 0;
+
+    z-index: 999;
+
+    display: none;
+
+    align-items: center;
+    justify-content: center;
+
+    padding: 14px;
+
+    background: rgba(0,0,0,.88);
+}
+
+.modal.show {
+    display: flex;
+}
+
+.modal-box {
+    width: min(720px, 100%);
+
+    background: #15181d;
+
+    border: 1px solid #30353e;
+
+    border-radius: 18px;
+
+    padding: 14px;
+}
+
+.modal-title {
+    font-size: 14px;
+
+    font-weight: 700;
+
+    margin-bottom: 10px;
+}
+
+.crop-area {
+    width: 100%;
+
+    height: 55vh;
+
+    min-height: 300px;
+
+    background: #080a0d;
+
+    overflow: hidden;
+}
+
+.crop-area img {
+    max-width: 100%;
+
+    display: block;
+}
+
+.modal-buttons {
+    display: flex;
+
+    justify-content: flex-end;
+
+    gap: 9px;
+
+    margin-top: 12px;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="app">
+
+    <!-- HEADER -->
+
+    <header class="header">
+
+        <div class="logo">
+            Printmotive
+        </div>
+
+        <div class="badge">
+            3D Designer Prototype
+        </div>
+
+    </header>
+
+
+    <!-- 3D VIEWER -->
+
+    <section class="viewer" id="viewer">
+
+        <canvas id="canvas"></canvas>
+
+        <div class="hint">
+            Drag to rotate • Pinch to zoom
+        </div>
+
+    </section>
+
+
+    <!-- CONTROLS -->
+
+    <section class="panel">
+
+        <div class="buttons">
+
+            <label class="btn" for="designInput">
+                📷 Upload Design
+            </label>
+
+            <input
+                id="designInput"
+                type="file"
+                accept="image/*"
+            >
+
+
+            <button
+                class="btn secondary"
+                id="removeDesign"
+            >
+                Remove Design
+            </button>
+
+
+            <button
+                class="btn secondary"
+                id="resetView"
+            >
+                Reset View
+            </button>
+
+        </div>
+
+
+        <div
+            class="status"
+            id="status"
+        >
+            Loading 3D T-shirt...
+        </div>
+
+
+        <div class="note">
+            Prototype processing happens inside your browser.
+        </div>
+
+    </section>
+
+</div>
+
+
+<!-- CROP MODAL -->
+
+<div
+    class="modal"
+    id="cropModal"
+>
+
+    <div class="modal-box">
+
+        <div class="modal-title">
+            Crop your design
+        </div>
+
+        <div class="crop-area">
+
+            <img
+                id="cropImage"
+                alt="Crop image"
+            >
+
+        </div>
+
+
+        <div class="modal-buttons">
+
+            <button
+                class="btn secondary"
+                id="cancelCrop"
+            >
+                Cancel
+            </button>
+
+            <button
+                class="btn"
+                id="applyCrop"
+            >
+                Apply to T-Shirt
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<script>
+
+/* =========================================================
+   CONFIG
+========================================================= */
+
+const MODEL_FILE =
+"crewneck-straight-cut-short-sleeve-t-shirt-3d-model-b42a1ab90447.glb";
+
+
+/* =========================================================
+   VARIABLES
+========================================================= */
+
+let scene;
+
+let camera;
+
+let renderer;
+
+let controls;
+
+let shirt = null;
+
+let originalMaterials = [];
+
+let designTexture = null;
+
+let cropper = null;
+
+
+/* =========================================================
+   ELEMENTS
+========================================================= */
+
+const canvas =
+document.getElementById("canvas");
+
+const viewer =
+document.getElementById("viewer");
+
+const status =
+document.getElementById("status");
+
+const designInput =
+document.getElementById("designInput");
+
+const cropModal =
+document.getElementById("cropModal");
+
+const cropImage =
+document.getElementById("cropImage");
+
+
+/* =========================================================
+   INIT
+========================================================= */
+
+function init() {
+
+    scene =
+    new THREE.Scene();
+
+
+    /* CAMERA */
+
+    camera =
+    new THREE.PerspectiveCamera(
+        35,
+        1,
+        0.01,
+        1000
+    );
+
+    camera.position.set(
+        0,
+        0.8,
+        3.4
+    );
+
+
+    /* RENDERER */
+
+    renderer =
+    new THREE.WebGLRenderer({
+
+        canvas: canvas,
+
+        antialias: true,
+
+        alpha: true,
+
+        preserveDrawingBuffer: false
+
+    });
+
+
+    renderer.setPixelRatio(
+        Math.min(
+            window.devicePixelRatio,
+            1.8
+        )
+    );
+
+
+    renderer.outputColorSpace =
+    THREE.SRGBColorSpace;
+
+
+    renderer.toneMapping =
+    THREE.ACESFilmicToneMapping;
+
+
+    renderer.toneMappingExposure =
+    1.15;
+
+
+    /* LIGHT */
+
+    const hemiLight =
+    new THREE.HemisphereLight(
+        0xffffff,
+        0x333333,
+        2.1
+    );
+
+    scene.add(hemiLight);
+
+
+    const keyLight =
+    new THREE.DirectionalLight(
+        0xffffff,
+        2.5
+    );
+
+    keyLight.position.set(
+        3,
+        5,
+        4
+    );
+
+    scene.add(keyLight);
+
+
+    const fillLight =
+    new THREE.DirectionalLight(
+        0xffffff,
+        1.2
+    );
+
+    fillLight.position.set(
+        -4,
+        2,
+        2
+    );
+
+    scene.add(fillLight);
+
+
+    /* ORBIT CONTROLS */
+
+    controls =
+    new THREE.OrbitControls(
+        camera,
+        canvas
+    );
+
+
+    controls.enableDamping = true;
+
+    controls.dampingFactor = 0.08;
+
+    controls.minDistance = 1.5;
+
+    controls.maxDistance = 6;
+
+    controls.target.set(
+        0,
+        0.55,
+        0
+    );
+
+
+    /* LOAD MODEL */
+
+    loadModel();
+
+
+    /* RESIZE */
+
+    resize();
+
+
+    window.addEventListener(
+        "resize",
+        resize
+    );
+
+
+    /* START */
+
+    animate();
+}
+
+
+/* =========================================================
+   LOAD GLB
+========================================================= */
+
+function loadModel() {
+
+    const loader =
+    new THREE.GLTFLoader();
+
+
+    loader.load(
+
+        MODEL_FILE,
+
+
+        function(gltf) {
+
+            shirt =
+            gltf.scene;
+
+
+            shirt.traverse(
+                function(object) {
+
+                    if (
+                        object.isMesh
+                    ) {
+
+                        object.castShadow = true;
+
+                        object.receiveShadow = true;
+
+
+                        originalMaterials.push({
+
+                            mesh: object,
+
+                            material: object.material
+
+                        });
+
+                    }
+
+                }
+            );
+
+
+            /* CENTER MODEL */
+
+            const box =
+            new THREE.Box3()
+            .setFromObject(shirt);
+
+
+            const size =
+            box.getSize(
+                new THREE.Vector3()
+            );
+
+
+            const center =
+            box.getCenter(
+                new THREE.Vector3()
+            );
+
+
+            shirt.position.sub(
+                center
+            );
+
+
+            /* NORMALIZE SIZE */
+
+            const maxSize =
+            Math.max(
+                size.x,
+                size.y,
+                size.z
+            );
+
+
+            shirt.scale.multiplyScalar(
+                2.2 / maxSize
+            );
+
+
+            scene.add(shirt);
+
+
+            status.innerText =
+            "3D T-shirt ready. Upload your design.";
+
+        },
+
+
+        undefined,
+
+
+        function(error) {
+
+            console.error(
+                "GLB ERROR:",
+                error
+            );
+
+
+            status.innerText =
+            "Model load failed. Make sure the GLB file is beside index.html.";
+
+        }
+
+    );
+
+}
+
+
+/* =========================================================
+   RESIZE
+========================================================= */
+
+function resize() {
+
+    const rect =
+    viewer.getBoundingClientRect();
+
+
+    renderer.setSize(
+        rect.width,
+        rect.height,
+        false
+    );
+
+
+    camera.aspect =
+    rect.width /
+    rect.height;
+
+
+    camera.updateProjectionMatrix();
+
+}
+
+
+/* =========================================================
+   CREATE DESIGN TEXTURE
+========================================================= */
+
+function createDesignTexture(image) {
+
+    const canvas =
+    document.createElement(
+        "canvas"
+    );
+
+
+    const context =
+    canvas.getContext("2d");
+
+
+    const size = 2048;
+
+
+    canvas.width = size;
+
+    canvas.height = size;
+
+
+    context.clearRect(
+        0,
+        0,
+        size,
+        size
+    );
+
+
+    const scale =
+    Math.min(
+        size / image.width,
+        size / image.height
+    );
+
+
+    const width =
+    image.width * scale;
+
+
+    const height =
+    image.height * scale;
+
+
+    context.drawImage(
+
+        image,
+
+        (size - width) / 2,
+
+        (size - height) / 2,
+
+        width,
+
+        height
+
+    );
+
+
+    const texture =
+    new THREE.CanvasTexture(
+        canvas
+    );
+
+
+    texture.colorSpace =
+    THREE.SRGBColorSpace;
+
+
+    texture.anisotropy =
+    renderer
+    .capabilities
+    .getMaxAnisotropy();
+
+
+    return texture;
+
+}
+
+
+/* =========================================================
+   APPLY DESIGN
+========================================================= */
+
+function applyDesign(image) {
+
+    if (!shirt) {
+
+        status.innerText =
+        "Please wait for the 3D model to load.";
+
+        return;
+
+    }
+
+
+    designTexture =
+    createDesignTexture(
+        image
+    );
+
+
+    /*
+      IMPORTANT:
+
+      This first prototype applies the
+      uploaded texture to the model's
+      mesh materials.
+
+      Later we will target only the
+      exact FRONT PRINT AREA using the
+      model's UV mapping.
+    */
+
+
+    shirt.traverse(
+        function(object) {
+
+            if (!object.isMesh) {
+                return;
+            }
+
+
+            const oldMaterial =
+            object.material;
+
+
+            const newMaterial =
+            oldMaterial.clone();
+
+
+            newMaterial.map =
+            designTexture;
+
+
+            newMaterial.needsUpdate =
+            true;
+
+
+            object.material =
+            newMaterial;
+
+        }
+    );
+
+
+    status.innerText =
+    "Design applied. Drag the T-shirt to rotate.";
+
+}
+
+
+/* =========================================================
+   FILE UPLOAD
+========================================================= */
+
+designInput.addEventListener(
+    "change",
+    function(event) {
+
+        const file =
+        event.target.files[0];
+
+
+        if (!file) {
+            return;
+        }
+
+
+        const imageURL =
+        URL.createObjectURL(
+            file
+        );
+
+
+        cropImage.onload =
+        function() {
+
+            if (cropper) {
+
+                cropper.destroy();
+
+            }
+
+
+            cropper =
+            new Cropper(
+                cropImage,
+                {
+
+                    viewMode: 1,
+
+                    autoCropArea: 0.8,
+
+                    background: false,
+
+                    responsive: true,
+
+                    zoomable: true,
+
+                    movable: true,
+
+                    rotatable: false,
+
+                    scalable: false
+
+                }
+            );
+
+
+            cropModal.classList.add(
+                "show"
+            );
+
+        };
+
+
+        cropImage.src =
+        imageURL;
+
+    }
+);
+
+
+/* =========================================================
+   CANCEL CROP
+========================================================= */
+
+document
+.getElementById("cancelCrop")
+.addEventListener(
+    "click",
+    function() {
+
+        cropModal.classList.remove(
+            "show"
+        );
+
+
+        designInput.value = "";
+
+    }
+);
+
+
+/* =========================================================
+   APPLY CROP
+========================================================= */
+
+document
+.getElementById("applyCrop")
+.addEventListener(
+    "click",
+    function() {
+
+        if (!cropper) {
+            return;
+        }
+
+
+        const croppedCanvas =
+        cropper.getCroppedCanvas({
+
+            maxWidth: 2048,
+
+            maxHeight: 2048,
+
+            imageSmoothingQuality:
+            "high"
+
+        });
+
+
+        const image =
+        new Image();
+
+
+        image.onload =
+        function() {
+
+            applyDesign(
+                image
+            );
+
+        };
+
+
+        image.src =
+        croppedCanvas.toDataURL(
+            "image/png"
+        );
+
+
+        cropModal.classList.remove(
+            "show"
+        );
+
+    }
+);
+
+
+/* =========================================================
+   REMOVE DESIGN
+========================================================= */
+
+document
+.getElementById("removeDesign")
+.addEventListener(
+    "click",
+    function() {
+
+        if (!shirt) {
+            return;
+        }
+
+
+        originalMaterials.forEach(
+            function(item) {
+
+                item.mesh.material =
+                item.material;
+
+            }
+        );
+
+
+        if (designTexture) {
+
+            designTexture.dispose();
+
+            designTexture = null;
+
+        }
+
+
+        status.innerText =
+        "Design removed.";
+
+    }
+);
+
+
+/* =========================================================
+   RESET VIEW
+========================================================= */
+
+document
+.getElementById("resetView")
+.addEventListener(
+    "click",
+    function() {
+
+        camera.position.set(
+            0,
+            0.8,
+            3.4
+        );
+
+
+        controls.target.set(
+            0,
+            0.55,
+            0
+        );
+
+
+        controls.update();
+
+    }
+);
+
+
+/* =========================================================
+   ANIMATION
+========================================================= */
+
+function animate() {
+
+    requestAnimationFrame(
+        animate
+    );
+
+
+    controls.update();
+
+
+    renderer.render(
+        scene,
+        camera
+    );
+
+}
+
+
+/* =========================================================
+   START
+========================================================= */
+
+init();
+
+</script>
+
+</body>
+</html>
