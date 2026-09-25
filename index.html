@@ -14,49 +14,46 @@
 <title>Printmotive 3D T-Shirt Designer</title>
 
 
-<!-- =====================================================
+<!-- =========================================================
      THREE.JS
-     ===================================================== -->
+     IMPORTANT:
+     All THREE files use EXACTLY the same version.
+========================================================= -->
 
-<script src="https://cdn.jsdelivr.net/npm/three@0.149.0/build/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.132.2/build/three.min.js"></script>
 
-<script src="https://cdn.jsdelivr.net/npm/three@0.149.0/examples/js/controls/OrbitControls.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.132.2/examples/js/controls/OrbitControls.js"></script>
 
-<script src="https://cdn.jsdelivr.net/npm/three@0.149.0/examples/js/loaders/GLTFLoader.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.132.2/examples/js/loaders/GLTFLoader.js"></script>
 
 
-<!-- =====================================================
+<!-- =========================================================
      CROPPER
-     ===================================================== -->
+========================================================= -->
 
 <script src="https://cdn.jsdelivr.net/npm/cropperjs@1.6.2/dist/cropper.min.js"></script>
 
-<link
-    rel="stylesheet"
-    href="https://cdn.jsdelivr.net/npm/cropperjs@1.6.2/dist/cropper.min.css"
->
+<link rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/cropperjs@1.6.2/dist/cropper.min.css">
 
 
 <style>
 
-/* =====================================================
-   RESET
-   ===================================================== */
+/* =========================================================
+   GLOBAL
+========================================================= */
 
 * {
     box-sizing: border-box;
 }
 
-
 html,
 body {
 
     margin: 0;
-
     padding: 0;
 
     width: 100%;
-
     min-height: 100%;
 
     background: #080a0d;
@@ -70,17 +67,19 @@ body {
 
 }
 
-
 body {
 
     overflow-x: hidden;
 
+    -webkit-tap-highlight-color:
+        transparent;
+
 }
 
 
-/* =====================================================
+/* =========================================================
    APP
-   ===================================================== */
+========================================================= */
 
 .app {
 
@@ -99,9 +98,9 @@ body {
 }
 
 
-/* =====================================================
+/* =========================================================
    HEADER
-   ===================================================== */
+========================================================= */
 
 .header {
 
@@ -120,10 +119,7 @@ body {
     border-bottom:
         1px solid #272b32;
 
-    flex-shrink: 0;
-
 }
-
 
 .logo {
 
@@ -132,7 +128,6 @@ body {
     font-weight: 800;
 
 }
-
 
 .badge {
 
@@ -149,9 +144,9 @@ body {
 }
 
 
-/* =====================================================
+/* =========================================================
    VIEWER
-   ===================================================== */
+========================================================= */
 
 .viewer {
 
@@ -164,6 +159,7 @@ body {
     min-height: 430px;
 
     background:
+
         radial-gradient(
             circle at 50% 35%,
             #30353d 0%,
@@ -174,7 +170,6 @@ body {
     overflow: hidden;
 
 }
-
 
 #canvas {
 
@@ -189,9 +184,9 @@ body {
 }
 
 
-/* =====================================================
+/* =========================================================
    HINT
-   ===================================================== */
+========================================================= */
 
 .hint {
 
@@ -204,8 +199,7 @@ body {
     transform:
         translateX(-50%);
 
-    padding:
-        8px 13px;
+    padding: 8px 13px;
 
     background:
         rgba(0,0,0,.65);
@@ -227,76 +221,9 @@ body {
 }
 
 
-/* =====================================================
-   MESSAGE
-   ===================================================== */
-
-.viewer-message {
-
-    position: absolute;
-
-    left: 50%;
-
-    top: 50%;
-
-    transform:
-        translate(-50%, -50%);
-
-    width:
-        calc(100% - 40px);
-
-    max-width: 430px;
-
-    padding: 18px;
-
-    text-align: center;
-
-    background:
-        rgba(8,10,13,.90);
-
-    border:
-        1px solid
-        rgba(255,255,255,.08);
-
-    border-radius: 16px;
-
-    z-index: 10;
-
-}
-
-
-.viewer-message.hidden {
-
-    display: none;
-
-}
-
-
-.viewer-message-title {
-
-    font-size: 16px;
-
-    font-weight: 700;
-
-    margin-bottom: 8px;
-
-}
-
-
-.viewer-message-text {
-
-    font-size: 12px;
-
-    line-height: 1.5;
-
-    color: #aeb6c3;
-
-}
-
-
-/* =====================================================
-   PANEL
-   ===================================================== */
+/* =========================================================
+   CONTROL PANEL
+========================================================= */
 
 .panel {
 
@@ -307,10 +234,7 @@ body {
     border-top:
         1px solid #272b32;
 
-    flex-shrink: 0;
-
 }
-
 
 .buttons {
 
@@ -322,13 +246,11 @@ body {
 
 }
 
-
 .btn {
 
     border: none;
 
-    padding:
-        12px 17px;
+    padding: 12px 17px;
 
     border-radius: 12px;
 
@@ -342,18 +264,9 @@ body {
 
     color: #111;
 
-    min-height: 46px;
-
-    display: inline-flex;
-
-    align-items: center;
-
-    justify-content: center;
-
-    user-select: none;
+    touch-action: manipulation;
 
 }
-
 
 .btn.secondary {
 
@@ -363,14 +276,11 @@ body {
 
 }
 
-
 .btn:active {
 
-    transform:
-        scale(.97);
+    transform: scale(.97);
 
 }
-
 
 input[type="file"] {
 
@@ -378,6 +288,10 @@ input[type="file"] {
 
 }
 
+
+/* =========================================================
+   STATUS
+========================================================= */
 
 .status {
 
@@ -391,7 +305,6 @@ input[type="file"] {
 
 }
 
-
 .note {
 
     margin-top: 7px;
@@ -403,9 +316,95 @@ input[type="file"] {
 }
 
 
-/* =====================================================
-   MODAL
-   ===================================================== */
+/* =========================================================
+   LOADING
+========================================================= */
+
+.loading-box {
+
+    position: absolute;
+
+    left: 50%;
+
+    top: 50%;
+
+    transform:
+        translate(-50%, -50%);
+
+    width: min(320px, 80%);
+
+    padding: 20px;
+
+    border-radius: 16px;
+
+    background:
+        rgba(10,12,16,.88);
+
+    border:
+        1px solid
+        rgba(255,255,255,.08);
+
+    text-align: center;
+
+    z-index: 10;
+
+    pointer-events: none;
+
+}
+
+.loading-title {
+
+    font-size: 15px;
+
+    font-weight: 700;
+
+    margin-bottom: 12px;
+
+}
+
+.loading-percent {
+
+    font-size: 12px;
+
+    color: #b8c0cb;
+
+    margin-bottom: 10px;
+
+}
+
+.progress {
+
+    width: 100%;
+
+    height: 6px;
+
+    border-radius: 20px;
+
+    background: #292e36;
+
+    overflow: hidden;
+
+}
+
+.progress-bar {
+
+    width: 0%;
+
+    height: 100%;
+
+    background: white;
+
+    border-radius: 20px;
+
+    transition:
+        width .15s linear;
+
+}
+
+
+/* =========================================================
+   CROP MODAL
+========================================================= */
 
 .modal {
 
@@ -428,23 +427,16 @@ input[type="file"] {
 
 }
 
-
 .modal.show {
 
     display: flex;
 
 }
 
-
 .modal-box {
 
     width:
         min(720px, 100%);
-
-    max-height:
-        calc(100vh - 28px);
-
-    overflow: hidden;
 
     background: #15181d;
 
@@ -457,7 +449,6 @@ input[type="file"] {
 
 }
 
-
 .modal-title {
 
     font-size: 14px;
@@ -467,7 +458,6 @@ input[type="file"] {
     margin-bottom: 10px;
 
 }
-
 
 .crop-area {
 
@@ -483,7 +473,6 @@ input[type="file"] {
 
 }
 
-
 .crop-area img {
 
     max-width: 100%;
@@ -491,7 +480,6 @@ input[type="file"] {
     display: block;
 
 }
-
 
 .modal-buttons {
 
@@ -506,41 +494,69 @@ input[type="file"] {
 }
 
 
-/* =====================================================
+/* =========================================================
    MOBILE
-   ===================================================== */
+========================================================= */
 
 @media (max-width: 600px) {
 
+    .header {
+
+        height: 54px;
+
+        padding:
+            0 12px;
+
+    }
+
+    .logo {
+
+        font-size: 17px;
+
+    }
+
+    .badge {
+
+        font-size: 10px;
+
+    }
+
     .viewer {
 
-        height: 62vh;
+        height: 60vh;
 
-        min-height: 430px;
-
-    }
-
-
-    .buttons {
-
-        display: grid;
-
-        grid-template-columns:
-            1fr 1fr;
-
-        width: 100%;
+        min-height: 390px;
 
     }
 
+    .panel {
+
+        padding: 12px;
+
+    }
 
     .btn {
 
-        width: 100%;
+        flex: 1;
+
+        min-width: 120px;
+
+        padding:
+            12px 10px;
+
+        font-size: 13px;
+
+    }
+
+    .hint {
+
+        font-size: 11px;
+
+        bottom: 10px;
 
     }
 
 }
-
 
 </style>
 
@@ -553,133 +569,157 @@ input[type="file"] {
 <div class="app">
 
 
-<!-- =====================================================
-     HEADER
-     ===================================================== -->
+    <!-- =====================================================
+         HEADER
+    ====================================================== -->
 
-<header class="header">
+    <header class="header">
 
-    <div class="logo">
-        Printmotive
-    </div>
+        <div class="logo">
+            Printmotive
+        </div>
 
-    <div class="badge">
-        3D Designer Prototype
-    </div>
+        <div class="badge">
+            3D Designer Prototype
+        </div>
 
-</header>
-
-
-<!-- =====================================================
-     3D VIEWER
-     ===================================================== -->
-
-<section
-    class="viewer"
-    id="viewer"
->
-
-    <canvas id="canvas"></canvas>
+    </header>
 
 
-    <div
-        class="hint"
+    <!-- =====================================================
+         3D VIEWER
+    ====================================================== -->
+
+    <section
+        class="viewer"
+        id="viewer"
     >
-        Drag to rotate • Pinch to zoom
-    </div>
+
+        <canvas
+            id="canvas"
+        ></canvas>
 
 
-    <div
-        class="viewer-message"
-        id="viewerMessage"
-    >
+        <!-- LOADING -->
 
         <div
-            class="viewer-message-title"
-            id="viewerMessageTitle"
+            class="loading-box"
+            id="loadingBox"
         >
+
+            <div
+                class="loading-title"
+            >
+                Loading 3D T-Shirt
+            </div>
+
+            <div
+                class="loading-percent"
+                id="loadingPercent"
+            >
+                Starting...
+            </div>
+
+            <div
+                class="progress"
+            >
+
+                <div
+                    class="progress-bar"
+                    id="progressBar"
+                ></div>
+
+            </div>
+
+        </div>
+
+
+        <div class="hint">
+
+            Drag to rotate
+            •
+            Pinch to zoom
+
+        </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         CONTROLS
+    ====================================================== -->
+
+    <section class="panel">
+
+        <div class="buttons">
+
+
+            <label
+                class="btn"
+                for="designInput"
+            >
+
+                📷 Upload Design
+
+            </label>
+
+
+            <input
+                id="designInput"
+                type="file"
+                accept="image/*"
+            >
+
+
+            <button
+                class="btn secondary"
+                id="removeDesign"
+            >
+
+                Remove Design
+
+            </button>
+
+
+            <button
+                class="btn secondary"
+                id="resetView"
+            >
+
+                Reset View
+
+            </button>
+
+
+        </div>
+
+
+        <div
+            class="status"
+            id="status"
+        >
+
             Loading 3D T-shirt...
+
         </div>
 
 
-        <div
-            class="viewer-message-text"
-            id="viewerMessageText"
-        >
-            Please wait.
+        <div class="note">
+
+            Prototype processing happens
+            inside your browser.
+
         </div>
 
-    </div>
-
-</section>
-
-
-<!-- =====================================================
-     CONTROLS
-     ===================================================== -->
-
-<section class="panel">
-
-    <div class="buttons">
-
-
-        <label
-            class="btn"
-            for="designInput"
-        >
-            📷 Upload Design
-        </label>
-
-
-        <input
-            id="designInput"
-            type="file"
-            accept="image/*"
-        >
-
-
-        <button
-            class="btn secondary"
-            id="removeDesign"
-            type="button"
-        >
-            Remove Design
-        </button>
-
-
-        <button
-            class="btn secondary"
-            id="resetView"
-            type="button"
-        >
-            Reset View
-        </button>
-
-
-    </div>
-
-
-    <div
-        class="status"
-        id="status"
-    >
-        Starting 3D viewer...
-    </div>
-
-
-    <div class="note">
-        Prototype processing happens inside your browser.
-    </div>
-
-</section>
+    </section>
 
 
 </div>
 
 
-<!-- =====================================================
+<!-- =========================================================
      CROP MODAL
-     ===================================================== -->
+========================================================= -->
 
 <div
     class="modal"
@@ -690,7 +730,9 @@ input[type="file"] {
 
 
         <div class="modal-title">
+
             Crop your design
+
         </div>
 
 
@@ -710,41 +752,45 @@ input[type="file"] {
             <button
                 class="btn secondary"
                 id="cancelCrop"
-                type="button"
             >
+
                 Cancel
+
             </button>
 
 
             <button
                 class="btn"
                 id="applyCrop"
-                type="button"
             >
+
                 Apply to T-Shirt
+
             </button>
 
 
         </div>
+
 
     </div>
 
 </div>
 
 
+
 <script>
 
-/* =====================================================
+/* =========================================================
    CONFIG
-   ===================================================== */
+========================================================= */
 
 const MODEL_FILE =
     "./shirt.glb";
 
 
-/* =====================================================
+/* =========================================================
    VARIABLES
-   ===================================================== */
+========================================================= */
 
 let scene = null;
 
@@ -763,205 +809,123 @@ let designTexture = null;
 let cropper = null;
 
 
-/* =====================================================
+/* =========================================================
    ELEMENTS
-   ===================================================== */
+========================================================= */
 
 const canvas =
-    document.getElementById("canvas");
+    document.getElementById(
+        "canvas"
+    );
 
 const viewer =
-    document.getElementById("viewer");
+    document.getElementById(
+        "viewer"
+    );
 
 const status =
-    document.getElementById("status");
+    document.getElementById(
+        "status"
+    );
 
 const designInput =
-    document.getElementById("designInput");
+    document.getElementById(
+        "designInput"
+    );
 
 const cropModal =
-    document.getElementById("cropModal");
+    document.getElementById(
+        "cropModal"
+    );
 
 const cropImage =
-    document.getElementById("cropImage");
-
-const viewerMessage =
     document.getElementById(
-        "viewerMessage"
+        "cropImage"
     );
 
-const viewerMessageTitle =
+const loadingBox =
     document.getElementById(
-        "viewerMessageTitle"
+        "loadingBox"
     );
 
-const viewerMessageText =
+const loadingPercent =
     document.getElementById(
-        "viewerMessageText"
+        "loadingPercent"
+    );
+
+const progressBar =
+    document.getElementById(
+        "progressBar"
     );
 
 
-/* =====================================================
-   MESSAGE
-   ===================================================== */
+/* =========================================================
+   ENGINE CHECK
+========================================================= */
 
-function showMessage(
-    title,
-    message
+if (
+    typeof THREE ===
+    "undefined"
 ) {
 
-    viewerMessageTitle.innerText =
-        title;
+    status.innerText =
+        "Three.js failed to load. Check your internet connection.";
 
-    viewerMessageText.innerText =
-        message;
-
-    viewerMessage.classList.remove(
-        "hidden"
+    throw new Error(
+        "Three.js failed to load."
     );
 
 }
 
 
-function hideMessage() {
+if (
+    typeof THREE.OrbitControls ===
+    "undefined"
+) {
 
-    viewerMessage.classList.add(
-        "hidden"
+    status.innerText =
+        "OrbitControls failed to load.";
+
+    throw new Error(
+        "OrbitControls failed to load."
     );
 
 }
 
 
-/* =====================================================
-   START
-   ===================================================== */
+if (
+    typeof THREE.GLTFLoader ===
+    "undefined"
+) {
 
-window.addEventListener(
-    "load",
-    function() {
+    status.innerText =
+        "GLTFLoader failed to load.";
 
-        startViewer();
-
-    }
-);
-
-
-/* =====================================================
-   START VIEWER
-   ===================================================== */
-
-function startViewer() {
-
-    /*
-       Check Three.js
-    */
-
-    if (
-        typeof THREE ===
-        "undefined"
-    ) {
-
-        status.innerText =
-            "Three.js could not load.";
-
-        showMessage(
-            "Three.js Failed",
-            "The Three.js library could not be loaded. Refresh the page and try again."
-        );
-
-        return;
-
-    }
-
-
-    /*
-       Check OrbitControls
-    */
-
-    if (
-        typeof THREE.OrbitControls ===
-        "undefined"
-    ) {
-
-        status.innerText =
-            "OrbitControls could not load.";
-
-        showMessage(
-            "Controls Failed",
-            "Three.js loaded, but OrbitControls did not load."
-        );
-
-        return;
-
-    }
-
-
-    /*
-       Check GLTFLoader
-    */
-
-    if (
-        typeof THREE.GLTFLoader ===
-        "undefined"
-    ) {
-
-        status.innerText =
-            "GLTFLoader could not load.";
-
-        showMessage(
-            "GLTFLoader Failed",
-            "The GLTF loader could not be loaded."
-        );
-
-        return;
-
-    }
-
-
-    try {
-
-        init();
-
-    }
-    catch (error) {
-
-        console.error(
-            "INIT ERROR:",
-            error
-        );
-
-        status.innerText =
-            "3D viewer initialization failed.";
-
-        showMessage(
-            "3D Viewer Error",
-            error.message ||
-            "Unable to start the 3D viewer."
-        );
-
-    }
+    throw new Error(
+        "GLTFLoader failed to load."
+    );
 
 }
 
 
-/* =====================================================
+/* =========================================================
    INIT
-   ===================================================== */
+========================================================= */
 
 function init() {
 
 
-    /* =================================================
+    /* =====================================================
        SCENE
-       ================================================= */
+    ====================================================== */
 
     scene =
         new THREE.Scene();
 
 
-    /* =================================================
+    /* =====================================================
        CAMERA
-       ================================================= */
+    ====================================================== */
 
     camera =
         new THREE.PerspectiveCamera(
@@ -979,9 +943,9 @@ function init() {
     );
 
 
-    /* =================================================
+    /* =====================================================
        RENDERER
-       ================================================= */
+    ====================================================== */
 
     renderer =
         new THREE.WebGLRenderer({
@@ -993,33 +957,37 @@ function init() {
                 true,
 
             alpha:
-                true
+                true,
+
+            powerPreference:
+                "high-performance",
+
+            preserveDrawingBuffer:
+                false
 
         });
 
 
+    /*
+       Mobile performance:
+       cap pixel ratio.
+    */
+
     renderer.setPixelRatio(
+
         Math.min(
-            window.devicePixelRatio ||
-                1,
-            1.5
+
+            window.devicePixelRatio || 1,
+
+            1.35
+
         )
+
     );
 
 
-    /*
-       Compatible with Three.js r149
-    */
-
-    if (
-        renderer.outputEncoding !==
-        undefined
-    ) {
-
-        renderer.outputEncoding =
-            THREE.sRGBEncoding;
-
-    }
+    renderer.outputEncoding =
+        THREE.sRGBEncoding;
 
 
     renderer.toneMapping =
@@ -1027,34 +995,40 @@ function init() {
 
 
     renderer.toneMappingExposure =
-        1.1;
+        1.15;
 
 
-    /* =================================================
+    /* =====================================================
        LIGHTS
-       ================================================= */
+    ====================================================== */
 
-    const hemi =
+    const hemiLight =
         new THREE.HemisphereLight(
+
             0xffffff,
+
             0x333333,
-            2
+
+            2.1
+
         );
 
-
     scene.add(
-        hemi
+        hemiLight
     );
 
 
-    const key =
+    const keyLight =
         new THREE.DirectionalLight(
+
             0xffffff,
+
             2.5
+
         );
 
 
-    key.position.set(
+    keyLight.position.set(
         3,
         5,
         4
@@ -1062,18 +1036,21 @@ function init() {
 
 
     scene.add(
-        key
+        keyLight
     );
 
 
-    const fill =
+    const fillLight =
         new THREE.DirectionalLight(
+
             0xffffff,
+
             1.2
+
         );
 
 
-    fill.position.set(
+    fillLight.position.set(
         -4,
         2,
         2
@@ -1081,37 +1058,21 @@ function init() {
 
 
     scene.add(
-        fill
+        fillLight
     );
 
 
-    const rim =
-        new THREE.DirectionalLight(
-            0xffffff,
-            0.8
-        );
-
-
-    rim.position.set(
-        0,
-        3,
-        -4
-    );
-
-
-    scene.add(
-        rim
-    );
-
-
-    /* =================================================
-       CONTROLS
-       ================================================= */
+    /* =====================================================
+       ORBIT CONTROLS
+    ====================================================== */
 
     controls =
         new THREE.OrbitControls(
+
             camera,
+
             canvas
+
         );
 
 
@@ -1135,72 +1096,67 @@ function init() {
         6;
 
 
+    controls.rotateSpeed =
+        0.7;
+
+
+    controls.zoomSpeed =
+        0.8;
+
+
     controls.target.set(
+
         0,
-        0,
+        0.55,
         0
+
     );
 
 
     controls.update();
 
 
-    /* =================================================
+    /* =====================================================
        LOAD MODEL
-       ================================================= */
+    ====================================================== */
 
     loadModel();
 
 
-    /* =================================================
+    /* =====================================================
        RESIZE
-       ================================================= */
+    ====================================================== */
 
     resize();
 
 
     window.addEventListener(
+
         "resize",
+
         resize
+
     );
 
 
-    window.addEventListener(
-        "orientationchange",
-        function() {
-
-            setTimeout(
-                resize,
-                200
-            );
-
-        }
-    );
-
-
-    /* =================================================
-       ANIMATION
-       ================================================= */
+    /* =====================================================
+       START RENDER LOOP
+    ====================================================== */
 
     animate();
 
 }
 
 
-/* =====================================================
-   LOAD MODEL
-   ===================================================== */
+/* =========================================================
+   LOAD GLB
+========================================================= */
 
 function loadModel() {
 
+
     status.innerText =
         "Loading 3D T-shirt...";
-
-
-    showMessage(
-        "Loading 3D T-shirt...",
-        "Please wait while the model loads."
-    );
 
 
     const loader =
@@ -1212,43 +1168,25 @@ function loadModel() {
         MODEL_FILE,
 
 
-        function(gltf) {
+        /* =================================================
+           SUCCESS
+        ================================================== */
 
-            console.log(
-                "GLB LOADED:",
-                gltf
-            );
+        function(gltf) {
 
 
             shirt =
                 gltf.scene;
 
 
-            if (!shirt) {
-
-                modelError(
-                    "GLB file contains no scene."
-                );
-
-                return;
-
-            }
-
-
             originalMaterials =
                 [];
 
 
-            let meshCount =
-                0;
-
-
-            /* =========================================
-               MODEL MESHES
-               ========================================= */
-
             shirt.traverse(
+
                 function(object) {
+
 
                     if (
                         !object.isMesh
@@ -1259,15 +1197,16 @@ function loadModel() {
                     }
 
 
-                    meshCount++;
-
+                    /*
+                       Disable expensive shadows.
+                       This improves mobile performance.
+                    */
 
                     object.castShadow =
-                        true;
-
+                        false;
 
                     object.receiveShadow =
-                        true;
+                        false;
 
 
                     originalMaterials.push({
@@ -1280,26 +1219,30 @@ function loadModel() {
 
                     });
 
+
+                    /*
+                       Improve texture filtering.
+                    */
+
+                    if (
+                        object.material &&
+                        object.material.map
+                    ) {
+
+                        object.material.map
+                            .generateMipmaps =
+                            true;
+
+                    }
+
                 }
+
             );
 
 
-            if (
-                meshCount === 0
-            ) {
-
-                modelError(
-                    "No mesh was found inside shirt.glb."
-                );
-
-                return;
-
-            }
-
-
-            /* =========================================
-               CENTER
-               ========================================= */
+            /* =============================================
+               CENTER MODEL
+            ============================================== */
 
             const box =
                 new THREE.Box3()
@@ -1325,15 +1268,19 @@ function loadModel() {
             );
 
 
-            /* =========================================
-               SCALE
-               ========================================= */
+            /* =============================================
+               NORMALIZE SIZE
+            ============================================== */
 
             const maxSize =
                 Math.max(
+
                     size.x,
+
                     size.y,
+
                     size.z
+
                 );
 
 
@@ -1341,88 +1288,123 @@ function loadModel() {
                 maxSize > 0
             ) {
 
-                const scale =
-                    2.2 /
-                    maxSize;
-
-
-                shirt.scale.setScalar(
-                    scale
-                );
+                shirt.scale
+                    .multiplyScalar(
+                        2.2 / maxSize
+                    );
 
             }
 
 
-            /* =========================================
-               ADD
-               ========================================= */
+            /* =============================================
+               ADD TO SCENE
+            ============================================== */
 
             scene.add(
                 shirt
             );
 
 
-            controls.target.set(
-                0,
-                0,
-                0
+            /* =============================================
+               HIDE LOADING
+            ============================================== */
+
+            progressBar.style.width =
+                "100%";
+
+
+            loadingPercent.innerText =
+                "100%";
+
+
+            setTimeout(
+
+                function() {
+
+                    loadingBox.style.display =
+                        "none";
+
+                },
+
+                250
+
             );
-
-
-            controls.update();
-
-
-            hideMessage();
 
 
             status.innerText =
                 "3D T-shirt ready. Upload your design.";
 
-
-            console.log(
-                "T-shirt successfully displayed."
-            );
-
         },
 
 
+        /* =================================================
+           PROGRESS
+        ================================================== */
+
         function(xhr) {
 
+
             if (
-                xhr &&
-                xhr.total
+                xhr.lengthComputable
             ) {
 
+
                 const percent =
-                    Math.round(
-                        (
-                            xhr.loaded /
-                            xhr.total
-                        ) * 100
+                    (
+                        xhr.loaded /
+                        xhr.total
+                    ) * 100;
+
+
+                const rounded =
+                    Math.min(
+
+                        100,
+
+                        Math.round(
+                            percent
+                        )
+
                     );
 
 
-                status.innerText =
-                    "Loading 3D T-shirt... " +
-                    percent +
-                    "%";
+                progressBar.style.width =
+                    rounded + "%";
+
+
+                loadingPercent.innerText =
+                    rounded + "%";
+
+            }
+            else {
+
+                loadingPercent.innerText =
+                    "Loading...";
 
             }
 
         },
 
 
+        /* =================================================
+           ERROR
+        ================================================== */
+
         function(error) {
 
+
             console.error(
-                "GLB LOAD ERROR:",
+                "GLB ERROR:",
                 error
             );
 
 
-            modelError(
-                "Could not load shirt.glb."
-            );
+            loadingBox.style.display =
+                "none";
+
+
+            status.innerText =
+                "Model load failed. Make sure shirt.glb is beside index.html.";
 
         }
 
@@ -1431,36 +1413,17 @@ function loadModel() {
 }
 
 
-/* =====================================================
-   MODEL ERROR
-   ===================================================== */
-
-function modelError(
-    message
-) {
-
-    status.innerText =
-        "Model loading failed.";
-
-
-    showMessage(
-        "3D Model Failed",
-        message +
-        " Make sure shirt.glb is beside index.html."
-    );
-
-}
-
-
-/* =====================================================
+/* =========================================================
    RESIZE
-   ===================================================== */
+========================================================= */
 
 function resize() {
 
+
     if (
         !renderer ||
-        !camera
+        !camera ||
+        !viewer
     ) {
 
         return;
@@ -1472,30 +1435,30 @@ function resize() {
         viewer.getBoundingClientRect();
 
 
-    const width =
-        Math.max(
-            1,
-            rect.width
-        );
+    if (
+        rect.width <= 0 ||
+        rect.height <= 0
+    ) {
 
+        return;
 
-    const height =
-        Math.max(
-            1,
-            rect.height
-        );
+    }
 
 
     renderer.setSize(
-        width,
-        height,
+
+        rect.width,
+
+        rect.height,
+
         false
+
     );
 
 
     camera.aspect =
-        width /
-        height;
+        rect.width /
+        rect.height;
 
 
     camera.updateProjectionMatrix();
@@ -1503,47 +1466,14 @@ function resize() {
 }
 
 
-/* =====================================================
-   ANIMATION
-   ===================================================== */
-
-function animate() {
-
-    requestAnimationFrame(
-        animate
-    );
-
-
-    if (controls) {
-
-        controls.update();
-
-    }
-
-
-    if (
-        renderer &&
-        scene &&
-        camera
-    ) {
-
-        renderer.render(
-            scene,
-            camera
-        );
-
-    }
-
-}
-
-
-/* =====================================================
+/* =========================================================
    CREATE DESIGN TEXTURE
-   ===================================================== */
+========================================================= */
 
 function createDesignTexture(
     image
 ) {
+
 
     const textureCanvas =
         document.createElement(
@@ -1551,14 +1481,19 @@ function createDesignTexture(
         );
 
 
-    const ctx =
+    const context =
         textureCanvas.getContext(
             "2d"
         );
 
 
+    /*
+       1536 instead of 2048
+       for better mobile memory/performance.
+    */
+
     const size =
-        2048;
+        1536;
 
 
     textureCanvas.width =
@@ -1569,21 +1504,23 @@ function createDesignTexture(
         size;
 
 
-    ctx.clearRect(
+    context.clearRect(
+
         0,
         0,
         size,
         size
+
     );
 
 
     const scale =
         Math.min(
-            size /
-                image.width,
 
-            size /
-                image.height
+            size / image.width,
+
+            size / image.height
+
         );
 
 
@@ -1597,15 +1534,13 @@ function createDesignTexture(
         scale;
 
 
-    ctx.drawImage(
+    context.drawImage(
 
         image,
 
-        (size - width) /
-            2,
+        (size - width) / 2,
 
-        (size - height) /
-            2,
+        (size - height) / 2,
 
         width,
 
@@ -1620,25 +1555,40 @@ function createDesignTexture(
         );
 
 
-    texture.needsUpdate =
+    texture.encoding =
+        THREE.sRGBEncoding;
+
+
+    texture.generateMipmaps =
         true;
 
 
-    if (
-        texture.encoding !==
-        undefined
-    ) {
+    texture.minFilter =
+        THREE.LinearMipmapLinearFilter;
 
-        texture.encoding =
-            THREE.sRGBEncoding;
 
-    }
+    texture.magFilter =
+        THREE.LinearFilter;
 
+
+    /*
+       Limit anisotropy on mobile.
+    */
 
     texture.anisotropy =
-        renderer
-            .capabilities
-            .getMaxAnisotropy();
+        Math.min(
+
+            4,
+
+            renderer
+                .capabilities
+                .getMaxAnisotropy()
+
+        );
+
+
+    texture.needsUpdate =
+        true;
 
 
     return texture;
@@ -1646,135 +1596,155 @@ function createDesignTexture(
 }
 
 
-/* =====================================================
+/* =========================================================
    APPLY DESIGN
-   ===================================================== */
+========================================================= */
 
 function applyDesign(
     image
 ) {
 
+
     if (!shirt) {
 
         status.innerText =
-            "Please wait for the T-shirt to load.";
+            "Please wait for the 3D model to load.";
 
         return;
 
     }
 
 
-    try {
+    /*
+       Dispose previous texture.
+    */
 
-        if (
-            designTexture
-        ) {
+    if (
+        designTexture
+    ) {
 
-            designTexture.dispose();
+        designTexture.dispose();
+
+        designTexture =
+            null;
+
+    }
+
+
+    designTexture =
+        createDesignTexture(
+            image
+        );
+
+
+    /*
+       Prototype:
+       apply uploaded design to
+       model meshes.
+    */
+
+    shirt.traverse(
+
+        function(object) {
+
+
+            if (
+                !object.isMesh
+            ) {
+
+                return;
+
+            }
+
+
+            const oldMaterial =
+                object.material;
+
+
+            /*
+               Handle material arrays.
+            */
+
+            if (
+                Array.isArray(
+                    oldMaterial
+                )
+            ) {
+
+
+                const newMaterials =
+                    oldMaterial.map(
+
+                        function(material) {
+
+
+                            const cloned =
+                                material.clone();
+
+
+                            cloned.map =
+                                designTexture;
+
+
+                            cloned.needsUpdate =
+                                true;
+
+
+                            return cloned;
+
+                        }
+
+                    );
+
+
+                object.material =
+                    newMaterials;
+
+
+            }
+            else {
+
+
+                const newMaterial =
+                    oldMaterial.clone();
+
+
+                newMaterial.map =
+                    designTexture;
+
+
+                newMaterial.needsUpdate =
+                    true;
+
+
+                object.material =
+                    newMaterial;
+
+            }
 
         }
 
-
-        designTexture =
-            createDesignTexture(
-                image
-            );
+    );
 
 
-        shirt.traverse(
-            function(object) {
-
-                if (
-                    !object.isMesh
-                ) {
-
-                    return;
-
-                }
-
-
-                const material =
-                    object.material;
-
-
-                if (
-                    Array.isArray(
-                        material
-                    )
-                ) {
-
-                    object.material =
-                        material.map(
-                            function(mat) {
-
-                                const cloned =
-                                    mat.clone();
-
-                                cloned.map =
-                                    designTexture;
-
-                                cloned.needsUpdate =
-                                    true;
-
-                                return cloned;
-
-                            }
-                        );
-
-                }
-                else {
-
-                    const cloned =
-                        material.clone();
-
-
-                    cloned.map =
-                        designTexture;
-
-
-                    cloned.needsUpdate =
-                        true;
-
-
-                    object.material =
-                        cloned;
-
-                }
-
-            }
-        );
-
-
-        status.innerText =
-            "Design applied. Drag to rotate.";
-
-    }
-    catch (error) {
-
-        console.error(
-            "DESIGN ERROR:",
-            error
-        );
-
-
-        status.innerText =
-            "Could not apply design.";
-
-    }
+    status.innerText =
+        "Design applied. Drag the T-shirt to rotate.";
 
 }
 
 
-/* =====================================================
-   UPLOAD
-   ===================================================== */
+/* =========================================================
+   FILE UPLOAD
+========================================================= */
 
 designInput.addEventListener(
+
     "change",
+
     function(event) {
 
+
         const file =
-            event.target.files &&
             event.target.files[0];
 
 
@@ -1784,6 +1754,10 @@ designInput.addEventListener(
 
         }
 
+
+        /*
+           Only images.
+        */
 
         if (
             !file.type.startsWith(
@@ -1799,7 +1773,7 @@ designInput.addEventListener(
         }
 
 
-        const url =
+        const imageURL =
             URL.createObjectURL(
                 file
             );
@@ -1807,10 +1781,6 @@ designInput.addEventListener(
 
         cropImage.onload =
             function() {
-
-                URL.revokeObjectURL(
-                    url
-                );
 
 
                 if (
@@ -1824,7 +1794,9 @@ designInput.addEventListener(
 
                 cropper =
                     new Cropper(
+
                         cropImage,
+
                         {
 
                             viewMode:
@@ -1852,6 +1824,7 @@ designInput.addEventListener(
                                 false
 
                         }
+
                     );
 
 
@@ -1859,27 +1832,36 @@ designInput.addEventListener(
                     "show"
                 );
 
+
+                URL.revokeObjectURL(
+                    imageURL
+                );
+
             };
 
 
         cropImage.src =
-            url;
+            imageURL;
 
     }
+
 );
 
 
-/* =====================================================
+/* =========================================================
    CANCEL CROP
-   ===================================================== */
+========================================================= */
 
 document
     .getElementById(
         "cancelCrop"
     )
     .addEventListener(
+
         "click",
+
         function() {
+
 
             cropModal.classList.remove(
                 "show"
@@ -1902,20 +1884,24 @@ document
                 "";
 
         }
+
     );
 
 
-/* =====================================================
+/* =========================================================
    APPLY CROP
-   ===================================================== */
+========================================================= */
 
 document
     .getElementById(
         "applyCrop"
     )
     .addEventListener(
+
         "click",
+
         function() {
+
 
             if (
                 !cropper
@@ -1926,95 +1912,102 @@ document
             }
 
 
-            try {
+            const croppedCanvas =
+                cropper.getCroppedCanvas({
 
-                const cropped =
-                    cropper.getCroppedCanvas({
+                    maxWidth:
+                        1536,
 
-                        maxWidth:
-                            2048,
+                    maxHeight:
+                        1536,
 
-                        maxHeight:
-                            2048,
+                    imageSmoothingQuality:
+                        "high"
 
-                        imageSmoothingEnabled:
-                            true,
-
-                        imageSmoothingQuality:
-                            "high"
-
-                    });
+                });
 
 
-                if (!cropped) {
+            if (
+                !croppedCanvas
+            ) {
 
-                    throw new Error(
-                        "Crop failed."
-                    );
+                return;
 
-                }
-
-
-                const image =
-                    new Image();
+            }
 
 
-                image.onload =
-                    function() {
-
-                        applyDesign(
-                            image
-                        );
-
-                    };
+            const image =
+                new Image();
 
 
-                image.src =
-                    cropped.toDataURL(
-                        "image/png"
+            image.onload =
+                function() {
+
+
+                    applyDesign(
+                        image
                     );
 
 
-                cropModal.classList.remove(
-                    "show"
+                    /*
+                       Cleanup cropper.
+                    */
+
+                    if (
+                        cropper
+                    ) {
+
+                        cropper.destroy();
+
+                        cropper =
+                            null;
+
+                    }
+
+                };
+
+
+            /*
+               JPEG is smaller than PNG
+               for normal designs.
+
+               Use PNG if transparency is
+               important later.
+            */
+
+            image.src =
+                croppedCanvas.toDataURL(
+                    "image/png"
                 );
 
 
-                cropper.destroy();
-
-                cropper =
-                    null;
-
-            }
-            catch (error) {
-
-                console.error(
-                    "CROP ERROR:",
-                    error
-                );
-
-                status.innerText =
-                    "Could not crop image.";
-
-            }
+            cropModal.classList.remove(
+                "show"
+            );
 
         }
+
     );
 
 
-/* =====================================================
+/* =========================================================
    REMOVE DESIGN
-   ===================================================== */
+========================================================= */
 
 document
     .getElementById(
         "removeDesign"
     )
     .addEventListener(
+
         "click",
+
         function() {
 
-            if (!shirt) {
+
+            if (
+                !shirt
+            ) {
 
                 return;
 
@@ -2022,12 +2015,15 @@ document
 
 
             originalMaterials.forEach(
+
                 function(item) {
+
 
                     item.mesh.material =
                         item.material;
 
                 }
+
             );
 
 
@@ -2047,20 +2043,24 @@ document
                 "Design removed.";
 
         }
+
     );
 
 
-/* =====================================================
+/* =========================================================
    RESET VIEW
-   ===================================================== */
+========================================================= */
 
 document
     .getElementById(
         "resetView"
     )
     .addEventListener(
+
         "click",
+
         function() {
+
 
             if (
                 !camera ||
@@ -2073,26 +2073,83 @@ document
 
 
             camera.position.set(
+
                 0,
+
                 0.8,
+
                 3.4
+
             );
 
 
             controls.target.set(
+
                 0,
-                0,
+
+                0.55,
+
                 0
+
             );
 
 
             controls.update();
 
         }
+
     );
 
 
+/* =========================================================
+   ANIMATION
+========================================================= */
+
+function animate() {
+
+
+    requestAnimationFrame(
+        animate
+    );
+
+
+    if (
+        controls
+    ) {
+
+        controls.update();
+
+    }
+
+
+    if (
+        renderer &&
+        scene &&
+        camera
+    ) {
+
+        renderer.render(
+
+            scene,
+
+            camera
+
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+   START
+========================================================= */
+
+init();
+
 </script>
 
+
 </body>
+
 </html>
