@@ -16,8 +16,6 @@
 
 <!-- =========================================================
      THREE.JS
-     IMPORTANT:
-     All THREE files use EXACTLY the same version.
 ========================================================= -->
 
 <script src="https://cdn.jsdelivr.net/npm/three@0.132.2/build/three.min.js"></script>
@@ -25,6 +23,9 @@
 <script src="https://cdn.jsdelivr.net/npm/three@0.132.2/examples/js/controls/OrbitControls.js"></script>
 
 <script src="https://cdn.jsdelivr.net/npm/three@0.132.2/examples/js/loaders/GLTFLoader.js"></script>
+
+<!-- DECAL -->
+<script src="https://cdn.jsdelivr.net/npm/three@0.132.2/examples/js/geometries/DecalGeometry.js"></script>
 
 
 <!-- =========================================================
@@ -348,8 +349,6 @@ input[type="file"] {
 
     z-index: 10;
 
-    pointer-events: none;
-
 }
 
 .loading-title {
@@ -395,9 +394,6 @@ input[type="file"] {
     background: white;
 
     border-radius: 20px;
-
-    transition:
-        width .15s linear;
 
 }
 
@@ -504,20 +500,13 @@ input[type="file"] {
 
         height: 54px;
 
-        padding:
-            0 12px;
+        padding: 0 12px;
 
     }
 
     .logo {
 
         font-size: 17px;
-
-    }
-
-    .badge {
-
-        font-size: 10px;
 
     }
 
@@ -541,8 +530,7 @@ input[type="file"] {
 
         min-width: 120px;
 
-        padding:
-            12px 10px;
+        padding: 12px 10px;
 
         font-size: 13px;
 
@@ -569,157 +557,138 @@ input[type="file"] {
 <div class="app">
 
 
-    <!-- =====================================================
-         HEADER
-    ====================================================== -->
+<!-- =======================================================
+     HEADER
+======================================================== -->
 
-    <header class="header">
+<header class="header">
 
-        <div class="logo">
-            Printmotive
-        </div>
+    <div class="logo">
+        Printmotive
+    </div>
 
-        <div class="badge">
-            3D Designer Prototype
-        </div>
+    <div class="badge">
+        3D Designer Prototype
+    </div>
 
-    </header>
+</header>
 
 
-    <!-- =====================================================
-         3D VIEWER
-    ====================================================== -->
+<!-- =======================================================
+     3D VIEWER
+======================================================== -->
 
-    <section
-        class="viewer"
-        id="viewer"
+<section
+    class="viewer"
+    id="viewer"
+>
+
+    <canvas
+        id="canvas"
+    ></canvas>
+
+
+    <!-- LOADING -->
+
+    <div
+        class="loading-box"
+        id="loadingBox"
     >
 
-        <canvas
-            id="canvas"
-        ></canvas>
-
-
-        <!-- LOADING -->
+        <div class="loading-title">
+            Loading 3D T-Shirt
+        </div>
 
         <div
-            class="loading-box"
-            id="loadingBox"
+            class="loading-percent"
+            id="loadingPercent"
+        >
+            Starting...
+        </div>
+
+        <div class="progress">
+
+            <div
+                class="progress-bar"
+                id="progressBar"
+            ></div>
+
+        </div>
+
+    </div>
+
+
+    <div class="hint">
+        Drag to rotate • Pinch to zoom
+    </div>
+
+</section>
+
+
+<!-- =======================================================
+     CONTROLS
+======================================================== -->
+
+<section class="panel">
+
+    <div class="buttons">
+
+
+        <label
+            class="btn"
+            for="designInput"
+        >
+            📷 Upload Design
+        </label>
+
+
+        <input
+            id="designInput"
+            type="file"
+            accept="image/*"
         >
 
-            <div
-                class="loading-title"
-            >
-                Loading 3D T-Shirt
-            </div>
 
-            <div
-                class="loading-percent"
-                id="loadingPercent"
-            >
-                Starting...
-            </div>
-
-            <div
-                class="progress"
-            >
-
-                <div
-                    class="progress-bar"
-                    id="progressBar"
-                ></div>
-
-            </div>
-
-        </div>
-
-
-        <div class="hint">
-
-            Drag to rotate
-            •
-            Pinch to zoom
-
-        </div>
-
-    </section>
-
-
-    <!-- =====================================================
-         CONTROLS
-    ====================================================== -->
-
-    <section class="panel">
-
-        <div class="buttons">
-
-
-            <label
-                class="btn"
-                for="designInput"
-            >
-
-                📷 Upload Design
-
-            </label>
-
-
-            <input
-                id="designInput"
-                type="file"
-                accept="image/*"
-            >
-
-
-            <button
-                class="btn secondary"
-                id="removeDesign"
-            >
-
-                Remove Design
-
-            </button>
-
-
-            <button
-                class="btn secondary"
-                id="resetView"
-            >
-
-                Reset View
-
-            </button>
-
-
-        </div>
-
-
-        <div
-            class="status"
-            id="status"
+        <button
+            class="btn secondary"
+            id="removeDesign"
         >
-
-            Loading 3D T-shirt...
-
-        </div>
+            Remove Design
+        </button>
 
 
-        <div class="note">
+        <button
+            class="btn secondary"
+            id="resetView"
+        >
+            Reset View
+        </button>
 
-            Prototype processing happens
-            inside your browser.
 
-        </div>
+    </div>
 
-    </section>
+
+    <div
+        class="status"
+        id="status"
+    >
+        Loading 3D T-shirt...
+    </div>
+
+
+    <div class="note">
+        Your design will be printed only inside the defined print area.
+    </div>
+
+</section>
 
 
 </div>
 
 
-<!-- =========================================================
+<!-- =======================================================
      CROP MODAL
-========================================================= -->
+======================================================== -->
 
 <div
     class="modal"
@@ -730,9 +699,7 @@ input[type="file"] {
 
 
         <div class="modal-title">
-
             Crop your design
-
         </div>
 
 
@@ -753,9 +720,7 @@ input[type="file"] {
                 class="btn secondary"
                 id="cancelCrop"
             >
-
                 Cancel
-
             </button>
 
 
@@ -763,9 +728,7 @@ input[type="file"] {
                 class="btn"
                 id="applyCrop"
             >
-
                 Apply to T-Shirt
-
             </button>
 
 
@@ -781,11 +744,103 @@ input[type="file"] {
 <script>
 
 /* =========================================================
-   CONFIG
+   CONFIGURATION
 ========================================================= */
+
+
+/*
+    ========================================================
+    MODEL
+    ========================================================
+*/
 
 const MODEL_FILE =
     "./shirt.glb";
+
+
+/*
+    ========================================================
+    PRINT AREA
+    ========================================================
+
+    IMPORTANT:
+
+    Ye values shirt ke normalized 3D coordinates
+    ke according hain.
+
+    Agar print thoda upar/neeche/left/right ho,
+    SIRF yahan values change karni hongi.
+
+    X = left / right
+    Y = up / down
+    Z = front / back
+
+    width  = print area width
+    height = print area height
+
+    depth = decal depth
+*/
+
+const PRINT_AREA = {
+
+    /*
+       Horizontal position
+    */
+
+    x: 0.0,
+
+
+    /*
+       Vertical position
+
+       Positive = upar
+       Negative = neeche
+    */
+
+    y: 0.48,
+
+
+    /*
+       Front surface position
+    */
+
+    z: 0.47,
+
+
+    /*
+       Print width
+    */
+
+    width: 0.78,
+
+
+    /*
+       Print height
+    */
+
+    height: 0.95,
+
+
+    /*
+       Decal thickness/depth
+    */
+
+    depth: 0.12
+
+};
+
+
+/*
+    ========================================================
+    DESIGN SCALE
+    ========================================================
+
+    Design ko print box ke andar fit karne ke liye.
+
+*/
+
+const DESIGN_MAX_SIZE =
+    0.92;
 
 
 /* =========================================================
@@ -802,7 +857,7 @@ let controls = null;
 
 let shirt = null;
 
-let originalMaterials = [];
+let printDecal = null;
 
 let designTexture = null;
 
@@ -860,7 +915,7 @@ const progressBar =
 
 
 /* =========================================================
-   ENGINE CHECK
+   THREE.JS CHECK
 ========================================================= */
 
 if (
@@ -869,10 +924,10 @@ if (
 ) {
 
     status.innerText =
-        "Three.js failed to load. Check your internet connection.";
+        "Three.js failed to load.";
 
     throw new Error(
-        "Three.js failed to load."
+        "THREE is not available."
     );
 
 }
@@ -887,7 +942,7 @@ if (
         "OrbitControls failed to load.";
 
     throw new Error(
-        "OrbitControls failed to load."
+        "OrbitControls is not available."
     );
 
 }
@@ -902,7 +957,22 @@ if (
         "GLTFLoader failed to load.";
 
     throw new Error(
-        "GLTFLoader failed to load."
+        "GLTFLoader is not available."
+    );
+
+}
+
+
+if (
+    typeof THREE.DecalGeometry ===
+    "undefined"
+) {
+
+    status.innerText =
+        "DecalGeometry failed to load.";
+
+    throw new Error(
+        "DecalGeometry is not available."
     );
 
 }
@@ -929,17 +999,26 @@ function init() {
 
     camera =
         new THREE.PerspectiveCamera(
+
             35,
+
             1,
+
             0.01,
+
             1000
+
         );
 
 
     camera.position.set(
+
         0,
+
         0.8,
+
         3.4
+
     );
 
 
@@ -969,8 +1048,7 @@ function init() {
 
 
     /*
-       Mobile performance:
-       cap pixel ratio.
+       Mobile performance
     */
 
     renderer.setPixelRatio(
@@ -999,7 +1077,7 @@ function init() {
 
 
     /* =====================================================
-       LIGHTS
+       LIGHTING
     ====================================================== */
 
     const hemiLight =
@@ -1012,6 +1090,7 @@ function init() {
             2.1
 
         );
+
 
     scene.add(
         hemiLight
@@ -1029,9 +1108,13 @@ function init() {
 
 
     keyLight.position.set(
+
         3,
+
         5,
+
         4
+
     );
 
 
@@ -1051,9 +1134,13 @@ function init() {
 
 
     fillLight.position.set(
+
         -4,
+
         2,
+
         2
+
     );
 
 
@@ -1107,7 +1194,9 @@ function init() {
     controls.target.set(
 
         0,
+
         0.55,
+
         0
 
     );
@@ -1140,7 +1229,7 @@ function init() {
 
 
     /* =====================================================
-       START RENDER LOOP
+       RENDER
     ====================================================== */
 
     animate();
@@ -1149,7 +1238,7 @@ function init() {
 
 
 /* =========================================================
-   LOAD GLB
+   LOAD MODEL
 ========================================================= */
 
 function loadModel() {
@@ -1179,9 +1268,9 @@ function loadModel() {
                 gltf.scene;
 
 
-            originalMaterials =
-                [];
-
+            /*
+               Process model.
+            */
 
             shirt.traverse(
 
@@ -1198,8 +1287,7 @@ function loadModel() {
 
 
                     /*
-                       Disable expensive shadows.
-                       This improves mobile performance.
+                       Mobile performance
                     */
 
                     object.castShadow =
@@ -1209,28 +1297,21 @@ function loadModel() {
                         false;
 
 
-                    originalMaterials.push({
-
-                        mesh:
-                            object,
-
-                        material:
-                            object.material
-
-                    });
-
-
                     /*
-                       Improve texture filtering.
+                       Keep original material.
+
+                       IMPORTANT:
+
+                       We DO NOT replace
+                       object.material.map.
                     */
 
                     if (
-                        object.material &&
-                        object.material.map
+                        object.material
                     ) {
 
-                        object.material.map
-                            .generateMipmaps =
+                        object.material
+                            .needsUpdate =
                             true;
 
                     }
@@ -1240,9 +1321,9 @@ function loadModel() {
             );
 
 
-            /* =============================================
+            /* =================================================
                CENTER MODEL
-            ============================================== */
+            ================================================== */
 
             const box =
                 new THREE.Box3()
@@ -1268,9 +1349,9 @@ function loadModel() {
             );
 
 
-            /* =============================================
-               NORMALIZE SIZE
-            ============================================== */
+            /* =================================================
+               NORMALIZE MODEL
+            ================================================== */
 
             const maxSize =
                 Math.max(
@@ -1290,24 +1371,27 @@ function loadModel() {
 
                 shirt.scale
                     .multiplyScalar(
-                        2.2 / maxSize
+
+                        2.2 /
+                        maxSize
+
                     );
 
             }
 
 
-            /* =============================================
-               ADD TO SCENE
-            ============================================== */
+            /* =================================================
+               ADD SHIRT
+            ================================================== */
 
             scene.add(
                 shirt
             );
 
 
-            /* =============================================
-               HIDE LOADING
-            ============================================== */
+            /* =================================================
+               LOADING COMPLETE
+            ================================================== */
 
             progressBar.style.width =
                 "100%";
@@ -1356,7 +1440,7 @@ function loadModel() {
                     ) * 100;
 
 
-                const rounded =
+                const value =
                     Math.min(
 
                         100,
@@ -1369,11 +1453,11 @@ function loadModel() {
 
 
                 progressBar.style.width =
-                    rounded + "%";
+                    value + "%";
 
 
                 loadingPercent.innerText =
-                    rounded + "%";
+                    value + "%";
 
             }
             else {
@@ -1404,7 +1488,7 @@ function loadModel() {
 
 
             status.innerText =
-                "Model load failed. Make sure shirt.glb is beside index.html.";
+                "Model load failed. Check shirt.glb.";
 
         }
 
@@ -1422,8 +1506,7 @@ function resize() {
 
     if (
         !renderer ||
-        !camera ||
-        !viewer
+        !camera
     ) {
 
         return;
@@ -1433,16 +1516,6 @@ function resize() {
 
     const rect =
         viewer.getBoundingClientRect();
-
-
-    if (
-        rect.width <= 0 ||
-        rect.height <= 0
-    ) {
-
-        return;
-
-    }
 
 
     renderer.setSize(
@@ -1488,8 +1561,8 @@ function createDesignTexture(
 
 
     /*
-       1536 instead of 2048
-       for better mobile memory/performance.
+       1536 is enough for mobile
+       and keeps memory lower.
     */
 
     const size =
@@ -1507,19 +1580,29 @@ function createDesignTexture(
     context.clearRect(
 
         0,
+
         0,
+
         size,
+
         size
 
     );
 
 
+    /*
+       Fit image inside canvas
+       without stretching.
+    */
+
     const scale =
         Math.min(
 
-            size / image.width,
+            size /
+            image.width,
 
-            size / image.height
+            size /
+            image.height
 
         );
 
@@ -1551,7 +1634,9 @@ function createDesignTexture(
 
     const texture =
         new THREE.CanvasTexture(
+
             textureCanvas
+
         );
 
 
@@ -1570,10 +1655,6 @@ function createDesignTexture(
     texture.magFilter =
         THREE.LinearFilter;
 
-
-    /*
-       Limit anisotropy on mobile.
-    */
 
     texture.anisotropy =
         Math.min(
@@ -1597,6 +1678,412 @@ function createDesignTexture(
 
 
 /* =========================================================
+   REMOVE OLD DECAL
+========================================================= */
+
+function removePrintDecal() {
+
+
+    if (
+        !printDecal
+    ) {
+
+        return;
+
+    }
+
+
+    /*
+       Remove decal from scene.
+    */
+
+    scene.remove(
+        printDecal
+    );
+
+
+    /*
+       Dispose geometry.
+    */
+
+    if (
+        printDecal.geometry
+    ) {
+
+        printDecal.geometry.dispose();
+
+    }
+
+
+    /*
+       Dispose material.
+    */
+
+    if (
+        printDecal.material
+    ) {
+
+        printDecal.material.dispose();
+
+    }
+
+
+    printDecal =
+        null;
+
+}
+
+
+/* =========================================================
+   FIND FRONT SHIRT MESH
+========================================================= */
+
+function getShirtMeshes() {
+
+
+    const meshes = [];
+
+
+    if (
+        !shirt
+    ) {
+
+        return meshes;
+
+    }
+
+
+    shirt.traverse(
+
+        function(object) {
+
+
+            if (
+                object.isMesh
+            ) {
+
+                meshes.push(
+                    object
+                );
+
+            }
+
+        }
+
+    );
+
+
+    return meshes;
+
+}
+
+
+/* =========================================================
+   CREATE PRINT DECAL
+========================================================= */
+
+function createPrintDecal() {
+
+
+    if (
+        !shirt ||
+        !designTexture
+    ) {
+
+        return;
+
+    }
+
+
+    /*
+       Remove previous print.
+    */
+
+    removePrintDecal();
+
+
+    const meshes =
+        getShirtMeshes();
+
+
+    if (
+        meshes.length === 0
+    ) {
+
+        return;
+
+    }
+
+
+    /*
+       Update world matrices
+       before raycasting.
+    */
+
+    shirt.updateMatrixWorld(
+        true
+    );
+
+
+    /*
+       ------------------------------------------------------
+       PRINT POSITION
+       ------------------------------------------------------
+
+       The shirt is already normalized to
+       approximately 2.2 units.
+
+       PRINT_AREA values are therefore
+       relative to this normalized model.
+    */
+
+
+    const printPosition =
+        new THREE.Vector3(
+
+            PRINT_AREA.x,
+
+            PRINT_AREA.y,
+
+            PRINT_AREA.z
+
+        );
+
+
+    /*
+       ------------------------------------------------------
+       DECAL ORIENTATION
+       ------------------------------------------------------
+
+       Shirt front is assumed to face +Z,
+       which matches the current viewer
+       orientation in your screenshot.
+    */
+
+    const printRotation =
+        new THREE.Euler(
+
+            0,
+
+            0,
+
+            0
+
+        );
+
+
+    /*
+       ------------------------------------------------------
+       DECAL SIZE
+       ------------------------------------------------------
+    */
+
+    const printSize =
+        new THREE.Vector3(
+
+            PRINT_AREA.width,
+
+            PRINT_AREA.height,
+
+            PRINT_AREA.depth
+
+        );
+
+
+    /*
+       ------------------------------------------------------
+       CREATE DECAL
+       ------------------------------------------------------
+    */
+
+    let decalGeometry =
+        null;
+
+
+    /*
+       Try meshes until decal can be created.
+    */
+
+    for (
+        let i = 0;
+        i < meshes.length;
+        i++
+    ) {
+
+
+        try {
+
+
+            decalGeometry =
+                new THREE.DecalGeometry(
+
+                    meshes[i],
+
+                    printPosition,
+
+                    printRotation,
+
+                    printSize
+
+                );
+
+
+            if (
+                decalGeometry &&
+                decalGeometry.attributes &&
+                decalGeometry.attributes.position &&
+                decalGeometry.attributes.position.count > 0
+            ) {
+
+                break;
+
+            }
+
+
+            if (
+                decalGeometry
+            ) {
+
+                decalGeometry.dispose();
+
+                decalGeometry =
+                    null;
+
+            }
+
+
+        }
+        catch (
+            error
+        ) {
+
+            console.warn(
+                "Decal attempt failed:",
+                error
+            );
+
+        }
+
+    }
+
+
+    /*
+       If no decal geometry found.
+    */
+
+    if (
+        !decalGeometry
+    ) {
+
+        status.innerText =
+            "Could not create print area.";
+
+        return;
+
+    }
+
+
+    /* =====================================================
+       DECAL MATERIAL
+    ====================================================== */
+
+    const decalMaterial =
+        new THREE.MeshBasicMaterial({
+
+            map:
+                designTexture,
+
+            transparent:
+                true,
+
+            depthTest:
+                true,
+
+            depthWrite:
+                false,
+
+            polygonOffset:
+                true,
+
+            polygonOffsetFactor:
+                -4,
+
+            polygonOffsetUnits:
+                -4,
+
+            side:
+                THREE.FrontSide
+
+        });
+
+
+    /*
+       ------------------------------------------------------
+       CREATE DECAL MESH
+       ------------------------------------------------------
+    */
+
+    printDecal =
+        new THREE.Mesh(
+
+            decalGeometry,
+
+            decalMaterial
+
+        );
+
+
+    /*
+       Decal is created in shirt/model
+       coordinates.
+
+       Therefore make it child of shirt.
+    */
+
+    shirt.add(
+        printDecal
+    );
+
+
+    /*
+       Important:
+
+       DecalGeometry position was calculated
+       against the shirt mesh in its current
+       normalized world transform.
+
+       Reset local transform so it doesn't
+       double-transform.
+    */
+
+    printDecal.position.set(
+        0,
+        0,
+        0
+    );
+
+
+    printDecal.rotation.set(
+        0,
+        0,
+        0
+    );
+
+
+    printDecal.scale.set(
+        1,
+        1,
+        1
+    );
+
+
+    status.innerText =
+        "Design applied inside the print area.";
+
+}
+
+
+/* =========================================================
    APPLY DESIGN
 ========================================================= */
 
@@ -1605,14 +2092,23 @@ function applyDesign(
 ) {
 
 
-    if (!shirt) {
+    if (
+        !shirt
+    ) {
 
         status.innerText =
-            "Please wait for the 3D model to load.";
+            "Please wait for the T-shirt to load.";
 
         return;
 
     }
+
+
+    /*
+       Remove previous design.
+    */
+
+    removePrintDecal();
 
 
     /*
@@ -1631,6 +2127,10 @@ function applyDesign(
     }
 
 
+    /*
+       Create new texture.
+    */
+
     designTexture =
         createDesignTexture(
             image
@@ -1638,97 +2138,11 @@ function applyDesign(
 
 
     /*
-       Prototype:
-       apply uploaded design to
-       model meshes.
+       Put it ONLY inside
+       the print area.
     */
 
-    shirt.traverse(
-
-        function(object) {
-
-
-            if (
-                !object.isMesh
-            ) {
-
-                return;
-
-            }
-
-
-            const oldMaterial =
-                object.material;
-
-
-            /*
-               Handle material arrays.
-            */
-
-            if (
-                Array.isArray(
-                    oldMaterial
-                )
-            ) {
-
-
-                const newMaterials =
-                    oldMaterial.map(
-
-                        function(material) {
-
-
-                            const cloned =
-                                material.clone();
-
-
-                            cloned.map =
-                                designTexture;
-
-
-                            cloned.needsUpdate =
-                                true;
-
-
-                            return cloned;
-
-                        }
-
-                    );
-
-
-                object.material =
-                    newMaterials;
-
-
-            }
-            else {
-
-
-                const newMaterial =
-                    oldMaterial.clone();
-
-
-                newMaterial.map =
-                    designTexture;
-
-
-                newMaterial.needsUpdate =
-                    true;
-
-
-                object.material =
-                    newMaterial;
-
-            }
-
-        }
-
-    );
-
-
-    status.innerText =
-        "Design applied. Drag the T-shirt to rotate.";
+    createPrintDecal();
 
 }
 
@@ -1748,16 +2162,14 @@ designInput.addEventListener(
             event.target.files[0];
 
 
-        if (!file) {
+        if (
+            !file
+        ) {
 
             return;
 
         }
 
-
-        /*
-           Only images.
-        */
 
         if (
             !file.type.startsWith(
@@ -1949,10 +2361,6 @@ document
                     );
 
 
-                    /*
-                       Cleanup cropper.
-                    */
-
                     if (
                         cropper
                     ) {
@@ -1966,14 +2374,6 @@ document
 
                 };
 
-
-            /*
-               JPEG is smaller than PNG
-               for normal designs.
-
-               Use PNG if transparency is
-               important later.
-            */
 
             image.src =
                 croppedCanvas.toDataURL(
@@ -2005,26 +2405,7 @@ document
         function() {
 
 
-            if (
-                !shirt
-            ) {
-
-                return;
-
-            }
-
-
-            originalMaterials.forEach(
-
-                function(item) {
-
-
-                    item.mesh.material =
-                        item.material;
-
-                }
-
-            );
+            removePrintDecal();
 
 
             if (
@@ -2102,7 +2483,7 @@ document
 
 
 /* =========================================================
-   ANIMATION
+   ANIMATION LOOP
 ========================================================= */
 
 function animate() {
