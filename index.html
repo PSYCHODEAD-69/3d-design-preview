@@ -86,12 +86,11 @@ body{
     display:grid;
 
     grid-template-rows:
-        58px
+        56px
         minmax(0,1fr)
         auto;
 
     overflow:hidden;
-
 }
 
 
@@ -102,7 +101,7 @@ body{
 header{
 
     width:100%;
-    height:58px;
+    height:56px;
 
     display:flex;
 
@@ -131,7 +130,7 @@ header{
 
 .headerBadge{
 
-    padding:9px 17px;
+    padding:8px 16px;
 
     border-radius:25px;
 
@@ -146,7 +145,7 @@ header{
 
 
 /* =========================================================
-   3D AREA
+   3D VIEWER
 ========================================================= */
 
 #viewer{
@@ -159,11 +158,6 @@ header{
     min-height:0;
 
     overflow:hidden;
-
-    /*
-       Screenshot jaisa dark grey/black
-       gradient background.
-    */
 
     background:
 
@@ -190,7 +184,7 @@ header{
 
 
 /* =========================================================
-   SMALL HELPER TEXT
+   VIEWER HINT
 ========================================================= */
 
 #viewerHint{
@@ -199,13 +193,13 @@ header{
 
     left:50%;
 
-    bottom:18px;
+    bottom:14px;
 
     transform:translateX(-50%);
 
     z-index:5;
 
-    padding:10px 20px;
+    padding:9px 18px;
 
     border-radius:25px;
 
@@ -220,7 +214,6 @@ header{
     white-space:nowrap;
 
     pointer-events:none;
-
 }
 
 
@@ -256,10 +249,9 @@ header{
     width:100%;
 
     padding:
-
+        8px
         14px
-        26px
-        calc(14px + env(safe-area-inset-bottom));
+        calc(8px + env(safe-area-inset-bottom));
 
     background:#101318;
 
@@ -283,25 +275,25 @@ header{
         1fr
         1fr;
 
-    gap:12px;
+    gap:10px;
 }
 
 .button{
 
     width:100%;
 
-    height:52px;
+    height:44px;
 
     border:none;
 
-    border-radius:15px;
+    border-radius:14px;
 
     display:flex;
 
     align-items:center;
     justify-content:center;
 
-    font-size:15px;
+    font-size:14px;
 
     font-weight:700;
 
@@ -349,11 +341,11 @@ header{
 
 .brightnessBox{
 
-    margin-top:12px;
+    margin-top:8px;
 
-    padding:12px 15px 13px;
+    padding:8px 14px 9px;
 
-    border-radius:15px;
+    border-radius:14px;
 
     background:#242930;
 }
@@ -365,7 +357,7 @@ header{
     align-items:center;
     justify-content:space-between;
 
-    margin-bottom:7px;
+    margin-bottom:3px;
 }
 
 .brightnessLabel{
@@ -391,7 +383,7 @@ header{
 
     width:100%;
 
-    height:24px;
+    height:22px;
 
     margin:0;
 
@@ -626,10 +618,9 @@ header{
     #controlsPanel{
 
         padding:
-
-            12px
+            8px
             14px
-            calc(12px + env(safe-area-inset-bottom));
+            calc(8px + env(safe-area-inset-bottom));
     }
 
     .buttonRow{
@@ -639,23 +630,25 @@ header{
 
     .button{
 
-        height:52px;
+        height:44px;
 
         font-size:14px;
     }
 
     .brightnessBox{
 
-        margin-top:10px;
+        margin-top:8px;
+
+        padding:8px 14px 9px;
     }
 
     #viewerHint{
 
-        bottom:15px;
+        bottom:12px;
 
         font-size:12px;
 
-        padding:9px 16px;
+        padding:8px 15px;
     }
 
 }
@@ -903,24 +896,15 @@ const applyCrop =
 
 
 /* =========================================================
-   PRINT CONFIGURATION
+   PRINT SETTINGS
 ========================================================= */
-
-/*
-   Fixed 3:4 print ratio.
-*/
 
 const PRINT_RATIO =
     3 / 4;
 
 
 /*
-   Print width will be calculated from
-   the actual shirt width.
-
-   This is important because a fixed
-   Three.js size was making the print
-   too large / cover the shirt.
+   Print width relative to shirt width.
 */
 
 const PRINT_WIDTH_RATIO =
@@ -936,22 +920,18 @@ const PRINT_DEPTH_RATIO =
 
 
 /*
-   Print vertical position.
+   0.55 was previous position.
 
-   0.50 = exact middle of bounding box.
-
-   0.55 = slightly below center.
-
-   User wanted chest ke thoda niche.
+   0.53 = slightly lower.
 */
 
 const PRINT_Y_RATIO =
-    0.55;
+    0.53;
 
 
-/*
-   Default brightness.
-*/
+/* =========================================================
+   DEFAULT BRIGHTNESS
+========================================================= */
 
 const DEFAULT_BRIGHTNESS =
     0.5;
@@ -983,6 +963,14 @@ let originalDesignURL = null;
 
 
 /* =========================================================
+   SCENE
+========================================================= */
+
+scene =
+    new THREE.Scene();
+
+
+/* =========================================================
    CAMERA
 ========================================================= */
 
@@ -1000,18 +988,6 @@ const initialTarget =
         0
     );
 
-
-/* =========================================================
-   SCENE
-========================================================= */
-
-scene =
-    new THREE.Scene();
-
-
-/* =========================================================
-   CAMERA
-========================================================= */
 
 camera =
     new THREE.PerspectiveCamera(
@@ -1071,7 +1047,7 @@ viewer.appendChild(
 
 
 /* =========================================================
-   CONTROLS
+   ORBIT CONTROLS
 ========================================================= */
 
 controls =
@@ -1080,9 +1056,15 @@ controls =
         renderer.domElement
     );
 
+
 controls.target.copy(
     initialTarget
 );
+
+
+/* =========================================================
+   SMOOTH ROTATION
+========================================================= */
 
 controls.enableDamping =
     true;
@@ -1090,14 +1072,67 @@ controls.enableDamping =
 controls.dampingFactor =
     0.08;
 
+
+/* =========================================================
+   ROTATION ENABLED
+========================================================= */
+
+controls.enableRotate =
+    true;
+
+
+/* =========================================================
+   ZOOM ENABLED
+========================================================= */
+
+controls.enableZoom =
+    true;
+
+controls.zoomSpeed =
+    1.0;
+
+
+/* =========================================================
+   MOBILE TOUCH CONTROLS
+========================================================= */
+
+/*
+   One finger:
+   rotate
+
+   Two fingers:
+   pinch zoom + optional pan
+*/
+
+controls.touches.ONE =
+    THREE.TOUCH.ROTATE;
+
+controls.touches.TWO =
+    THREE.TOUCH.DOLLY_PAN;
+
+
+/* =========================================================
+   PAN OFF
+========================================================= */
+
 controls.enablePan =
     false;
 
+
+/* =========================================================
+   ZOOM LIMITS
+========================================================= */
+
 controls.minDistance =
-    2.5;
+    2.0;
 
 controls.maxDistance =
-    7;
+    8.0;
+
+
+/* =========================================================
+   ROTATION LIMITS
+========================================================= */
 
 controls.minPolarAngle =
     Math.PI * 0.18;
@@ -1105,18 +1140,20 @@ controls.minPolarAngle =
 controls.maxPolarAngle =
     Math.PI * 0.82;
 
+
 controls.update();
 
 
 /* =========================================================
-   LIGHTING
+   LIGHTS
 ========================================================= */
 
 const hemi =
     new THREE.HemisphereLight(
         0xffffff,
         0x444444,
-        1.25 * DEFAULT_BRIGHTNESS
+        1.25 *
+        DEFAULT_BRIGHTNESS
     );
 
 hemi.name =
@@ -1130,7 +1167,8 @@ scene.add(
 const key =
     new THREE.DirectionalLight(
         0xffffff,
-        1.25 * DEFAULT_BRIGHTNESS
+        1.25 *
+        DEFAULT_BRIGHTNESS
     );
 
 key.name =
@@ -1150,7 +1188,8 @@ scene.add(
 const fill =
     new THREE.DirectionalLight(
         0xffffff,
-        .7 * DEFAULT_BRIGHTNESS
+        .7 *
+        DEFAULT_BRIGHTNESS
     );
 
 fill.name =
@@ -1180,21 +1219,25 @@ function updateBrightness(){
 
 
     hemi.intensity =
-        1.25 * value;
+        1.25 *
+        value;
 
 
     key.intensity =
-        1.25 * value;
+        1.25 *
+        value;
 
 
     fill.intensity =
-        .7 * value;
+        .7 *
+        value;
 
 
     brightnessValue.textContent =
         Math.round(
             value * 100
         ) + "%";
+
 }
 
 
@@ -1204,23 +1247,6 @@ updateBrightness();
 /* =========================================================
    MAKE SHIRT PLAIN
 ========================================================= */
-
-/*
-   VERY IMPORTANT.
-
-   Tumhare current screenshot mein jo
-   uploaded/person image poori shirt par
-   dikh rahi hai, woh decal nahi hai.
-
-   GLB ke original material/texture mein
-   image baked hai.
-
-   Isliye hum original map hata rahe hain
-   aur shirt ko plain white material de rahe hain.
-
-   Uploaded design baad mein separate
-   DecalGeometry ke through lagega.
-*/
 
 function makeShirtPlain(){
 
@@ -1233,7 +1259,9 @@ function makeShirtPlain(){
     shirt.traverse(
         function(object){
 
-            if(!object.isMesh){
+            if(
+                !object.isMesh
+            ){
 
                 return;
             }
@@ -1266,24 +1294,31 @@ function makeShirtPlain(){
 
 
                         /*
-                           Remove original texture.
+                           Remove original
+                           baked texture.
                         */
 
-                        material.map = null;
+                        material.map =
+                            null;
 
-                        material.normalMap = null;
+                        material.normalMap =
+                            null;
 
-                        material.roughnessMap = null;
+                        material.roughnessMap =
+                            null;
 
-                        material.metalnessMap = null;
+                        material.metalnessMap =
+                            null;
 
-                        material.aoMap = null;
+                        material.aoMap =
+                            null;
 
-                        material.emissiveMap = null;
+                        material.emissiveMap =
+                            null;
 
 
                         /*
-                           Plain T-shirt colour.
+                           Plain white shirt.
                         */
 
                         material.color =
@@ -1297,7 +1332,6 @@ function makeShirtPlain(){
 
                         material.metalness =
                             0.02;
-
 
                         material.needsUpdate =
                             true;
@@ -1325,7 +1359,7 @@ function makeShirtPlain(){
 
 
 /* =========================================================
-   LOAD GLB
+   LOAD SHIRT
 ========================================================= */
 
 const loader =
@@ -1369,12 +1403,6 @@ loader.load(
         );
 
 
-        /*
-           Keep model at origin.
-
-           Camera framing is handled separately.
-        */
-
         shirt.position.set(
             0,
             0,
@@ -1388,8 +1416,8 @@ loader.load(
 
 
         /*
-           Remove photo texture from
-           original GLB.
+           Remove original photo
+           texture.
         */
 
         makeShirtPlain();
@@ -1401,8 +1429,8 @@ loader.load(
 
 
         /*
-           Automatically frame the shirt
-           so it is large and centred.
+           Automatically center and
+           size the model.
         */
 
         frameShirt();
@@ -1416,7 +1444,8 @@ loader.load(
     function(xhr){
 
         /*
-           Nothing needed here.
+           Loading progress intentionally
+           kept silent.
         */
 
     },
@@ -1427,6 +1456,7 @@ loader.load(
             "GLB loading error:",
             error
         );
+
 
         loading.textContent =
             "Unable to load 3D T-Shirt.";
@@ -1473,18 +1503,13 @@ function frameShirt(){
 
 
     /*
-       Camera target = exact model centre.
+       Exact center of model.
     */
 
     controls.target.copy(
         center
     );
 
-
-    /*
-       Make shirt large enough
-       for the viewer.
-    */
 
     const maxSize =
         Math.max(
@@ -1502,23 +1527,31 @@ function frameShirt(){
 
     let distance =
         maxSize /
-        (2 *
-        Math.tan(
-            fov / 2
-        ));
+        (
+            2 *
+            Math.tan(
+                fov / 2
+            )
+        );
 
 
     /*
-       Small margin.
+       Smaller margin = larger shirt
+       inside the bigger preview area.
     */
 
-    distance *= 1.18;
+    distance *= 1.05;
 
 
     camera.position.set(
+
         center.x,
+
         center.y,
-        center.z + distance
+
+        center.z +
+        distance
+
     );
 
 
@@ -1542,7 +1575,7 @@ function frameShirt(){
 
 
 /* =========================================================
-   FIND FRONT SURFACE
+   FIND FRONT SHIRT SURFACE
 ========================================================= */
 
 function findFrontSurface(){
@@ -1575,17 +1608,15 @@ function findFrontSurface(){
 
 
     /*
-       Chest slightly below centre.
+       Chest slightly below
+       the center.
     */
 
     const chestY =
         bounds.min.y +
-        size.y * PRINT_Y_RATIO;
+        size.y *
+        PRINT_Y_RATIO;
 
-
-    /*
-       Start from front of model.
-    */
 
     const xTests = [
 
@@ -1615,7 +1646,9 @@ function findFrontSurface(){
 
                 chestY,
 
-                bounds.max.z + size.z + 2
+                bounds.max.z +
+                size.z +
+                2
 
             );
 
@@ -1671,10 +1704,6 @@ function findFrontSurface(){
                     )
                     .normalize();
 
-
-            /*
-               Front surface only.
-            */
 
             if(
                 normal.z <= 0
@@ -1802,16 +1831,13 @@ function applyDesignToShirt(
 
 
     /*
-       Print width based on actual
-       shirt width.
-
-       This prevents the print from
-       covering the whole shirt.
+       Print width is based on
+       actual shirt width.
     */
 
     const printWidth =
         size.x *
-        PRINT_WIDTH_RATIO;
+        0.42;
 
 
     const printHeight =
@@ -1820,8 +1846,8 @@ function applyDesignToShirt(
 
 
     /*
-       Position exactly around
-       chest / slightly below.
+       Start exactly on the
+       selected chest area.
     */
 
     const position =
@@ -1829,9 +1855,7 @@ function applyDesignToShirt(
 
 
     /*
-       Centre horizontally.
-
-       No old right-side offset.
+       Keep horizontal centre.
     */
 
     position.x =
@@ -1839,8 +1863,8 @@ function applyDesignToShirt(
 
 
     /*
-       Keep vertical position from
-       raycast chest point.
+       Keep calculated chest
+       vertical position.
     */
 
     position.y =
@@ -1848,8 +1872,7 @@ function applyDesignToShirt(
 
 
     /*
-       Move tiny amount away from
-       shirt surface to prevent z-fighting.
+       Tiny surface offset.
     */
 
     position.add(
@@ -1865,11 +1888,8 @@ function applyDesignToShirt(
 
 
     /*
-       Orient decal according to
-       actual shirt surface.
-
-       This makes the print follow
-       the shirt's front curvature.
+       Match decal orientation
+       to shirt surface.
     */
 
     const forward =
@@ -1901,7 +1921,7 @@ function applyDesignToShirt(
 
 
     /*
-       3:4 print rectangle.
+       Fixed 3:4 decal.
     */
 
     const decalSize =
@@ -1913,7 +1933,7 @@ function applyDesignToShirt(
 
             Math.max(
                 size.z *
-                PRINT_DEPTH_RATIO,
+                0.12,
                 .15
             )
 
@@ -1921,11 +1941,8 @@ function applyDesignToShirt(
 
 
     /*
-       DecalGeometry clips the image
-       against the shirt surface.
-
-       It does NOT replace the whole
-       shirt texture.
+       Project only inside the
+       print area.
     */
 
     const geometry =
@@ -2098,7 +2115,7 @@ function createTextureFromCrop(){
 
 
 /* =========================================================
-   OPEN CROP
+   OPEN CROP MODAL
 ========================================================= */
 
 function openCropModal(
@@ -2205,7 +2222,7 @@ function closeCropModal(){
 
 
 /* =========================================================
-   UPLOAD
+   UPLOAD BUTTON
 ========================================================= */
 
 uploadBtn.addEventListener(
@@ -2269,6 +2286,11 @@ fileInput.addEventListener(
         );
 
 
+        /*
+           Allows selecting the
+           same image again.
+        */
+
         this.value =
             "";
 
@@ -2313,7 +2335,7 @@ applyCrop.addEventListener(
 
 
 /* =========================================================
-   REMOVE
+   REMOVE DESIGN
 ========================================================= */
 
 removeBtn.addEventListener(
@@ -2327,7 +2349,7 @@ removeBtn.addEventListener(
 
 
 /* =========================================================
-   RESET CAMERA
+   RESET VIEW
 ========================================================= */
 
 resetBtn.addEventListener(
@@ -2397,23 +2419,12 @@ window.addEventListener(
             height
         );
 
-
-        /*
-           Re-frame only when needed.
-        */
-
-        if(shirt){
-
-            frameShirt();
-
-        }
-
     }
 );
 
 
 /* =========================================================
-   ANIMATION
+   ANIMATION LOOP
 ========================================================= */
 
 function animate(){
