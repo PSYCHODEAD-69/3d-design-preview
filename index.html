@@ -2,538 +2,1706 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+
+<meta name="viewport"
+      content="width=device-width,
+      initial-scale=1.0,
+      maximum-scale=1.0,
+      user-scalable=no">
+
 <title>Printmotive 3D T-Shirt Designer</title>
 
+<!-- THREE.JS -->
 <script src="https://cdn.jsdelivr.net/npm/three@0.132.2/build/three.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.132.2/examples/js/controls/OrbitControls.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.132.2/examples/js/loaders/GLTFLoader.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/three@0.132.2/examples/js/geometries/DecalGeometry.js"></script>
-
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
 
 <style>
-*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-html,body{margin:0;padding:0;width:100%;height:100%;overflow:hidden;background:#080808;color:#fff;font-family:Arial,Helvetica,sans-serif}
-body{display:flex;flex-direction:column}
-.header{height:56px;min-height:56px;display:flex;align-items:center;justify-content:center;background:#0d0d0d;border-bottom:1px solid #222;z-index:20}
-.logo{font-size:18px;font-weight:800}
-#viewer{position:relative;flex:1;min-height:0;overflow:hidden}
-canvas{display:block;width:100%;height:100%}
-#loading{position:absolute;inset:0;z-index:10;display:flex;align-items:center;justify-content:center;flex-direction:column;background:#080808}
-.loading-title{font-size:18px;font-weight:700;margin-bottom:12px}
-.progress-box{width:min(280px,80%);height:7px;background:#222;border-radius:50px;overflow:hidden}
-#progress{width:0;height:100%;background:#fff}
-#loadingText{margin-top:10px;font-size:13px;color:#aaa}
-.controls{min-height:104px;padding:8px;display:flex;align-items:center;justify-content:center;gap:8px;background:#0d0d0d;border-top:1px solid #222;z-index:20;flex-wrap:wrap}
-button,.upload-label{border:0;outline:none;padding:11px 14px;border-radius:10px;background:#fff;color:#000;font-size:13px;font-weight:700;cursor:pointer}
-button:active,.upload-label:active{transform:scale(.97)}
-.secondary{background:#1e1e1e;color:#fff;border:1px solid #333}
-input[type=file]{display:none}
-.brightness-control{width:100%;display:flex;align-items:center;justify-content:center;gap:9px;background:#181818;border:1px solid #303030;border-radius:10px;padding:9px;color:#ccc;font-size:13px}
-#brightnessSlider{width:175px;accent-color:#fff}
-#message{position:fixed;left:50%;bottom:125px;transform:translateX(-50%);z-index:200;display:none;max-width:90%;padding:10px 14px;border-radius:10px;background:#151515;border:1px solid #333;font-size:13px;text-align:center}
-.modal{position:fixed;inset:0;z-index:100;display:none;align-items:center;justify-content:center;padding:15px;background:rgba(0,0,0,.85)}
-.modal.active{display:flex}
-.modal-box{width:min(500px,100%);max-height:92vh;overflow:hidden;background:#111;border:1px solid #2a2a2a;border-radius:16px;display:flex;flex-direction:column}
-.modal-header{padding:14px 15px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #252525}
-.modal-title{font-size:16px;font-weight:800}
-.close{width:34px;height:34px;padding:0;border-radius:50%;background:#222;color:#fff;font-size:20px}
-.crop-area{position:relative;width:100%;height:min(60vh,500px);background:#050505;overflow:hidden}
-.crop-area img{display:block;max-width:100%}
-.crop-info{padding:10px 15px;color:#aaa;font-size:12px;line-height:1.5;text-align:center;border-top:1px solid #222}
-.modal-buttons{padding:12px 15px;display:flex;gap:8px;border-top:1px solid #222}
-.modal-buttons button{flex:1}
-@media(max-width:600px){
-.header{height:55px;min-height:55px}
-.logo{font-size:16px}
-.controls{min-height:104px}
-button,.upload-label{padding:10px 11px;font-size:12px}
-#brightnessSlider{width:160px}
+
+*{
+    box-sizing:border-box;
 }
+
+html,
+body{
+    margin:0;
+    padding:0;
+    width:100%;
+    height:100%;
+    overflow:hidden;
+    background:#111;
+    font-family:Arial,Helvetica,sans-serif;
+}
+
+#app{
+    width:100%;
+    height:100%;
+    position:relative;
+}
+
+#viewer{
+    position:absolute;
+    inset:0;
+}
+
+canvas{
+    display:block;
+}
+
+#ui{
+    position:absolute;
+    left:12px;
+    right:12px;
+    bottom:12px;
+    z-index:20;
+
+    padding:14px;
+
+    border-radius:18px;
+
+    background:rgba(20,20,20,.88);
+
+    backdrop-filter:blur(12px);
+
+    box-shadow:
+        0 10px 35px rgba(0,0,0,.35);
+}
+
+#upload{
+    display:none;
+}
+
+.uploadBtn{
+    width:100%;
+    height:48px;
+
+    border:0;
+    border-radius:13px;
+
+    background:#fff;
+    color:#111;
+
+    font-size:15px;
+    font-weight:700;
+
+    cursor:pointer;
+}
+
+#removeBtn{
+    width:100%;
+    height:42px;
+
+    margin-top:9px;
+
+    border:1px solid rgba(255,255,255,.15);
+    border-radius:12px;
+
+    background:#252525;
+    color:#fff;
+
+    font-size:14px;
+
+    cursor:pointer;
+
+    display:none;
+}
+
+.controlRow{
+    margin-top:11px;
+}
+
+.controlLabel{
+    color:#fff;
+    font-size:13px;
+    margin-bottom:5px;
+}
+
+input[type="range"]{
+    width:100%;
+}
+
+#status{
+    margin-top:9px;
+
+    color:#ddd;
+
+    text-align:center;
+
+    font-size:12px;
+
+    min-height:17px;
+}
+
+#loading{
+    position:absolute;
+
+    inset:0;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    z-index:50;
+
+    background:#111;
+
+    color:#fff;
+
+    font-size:15px;
+}
+
+#cropModal{
+    position:absolute;
+
+    inset:0;
+
+    z-index:100;
+
+    display:none;
+
+    align-items:center;
+    justify-content:center;
+
+    padding:15px;
+
+    background:rgba(0,0,0,.88);
+}
+
+.cropBox{
+    width:min(95vw,500px);
+
+    background:#181818;
+
+    border-radius:18px;
+
+    padding:15px;
+
+    box-shadow:
+        0 20px 70px rgba(0,0,0,.5);
+}
+
+.cropTitle{
+    color:#fff;
+
+    font-size:16px;
+    font-weight:700;
+
+    margin-bottom:12px;
+
+    text-align:center;
+}
+
+#cropCanvas{
+    display:block;
+
+    width:100%;
+
+    aspect-ratio:3/4;
+
+    background:#222;
+
+    border-radius:12px;
+
+    object-fit:contain;
+}
+
+.cropButtons{
+    display:flex;
+
+    gap:10px;
+
+    margin-top:12px;
+}
+
+.cropButtons button{
+    flex:1;
+
+    height:45px;
+
+    border:0;
+
+    border-radius:12px;
+
+    font-weight:700;
+
+    cursor:pointer;
+}
+
+#applyCrop{
+    background:#fff;
+    color:#111;
+}
+
+#cancelCrop{
+    background:#292929;
+    color:#fff;
+}
+
 </style>
 </head>
 
 <body>
 
-<div class="header">
-<div class="logo">Printmotive 3D T-Shirt Designer</div>
+<div id="app">
+
+    <div id="viewer"></div>
+
+    <div id="loading">
+        Loading 3D T-Shirt...
+    </div>
+
+    <div id="ui">
+
+        <label for="upload" class="uploadBtn"
+               style="display:flex;align-items:center;justify-content:center;">
+            Upload Your Design
+        </label>
+
+        <input
+            id="upload"
+            type="file"
+            accept="image/png,image/jpeg,image/webp"
+        >
+
+        <button id="removeBtn">
+            Remove Design
+        </button>
+
+        <div class="controlRow">
+
+            <div class="controlLabel">
+                Print Brightness
+            </div>
+
+            <input
+                id="brightness"
+                type="range"
+                min="0.5"
+                max="2"
+                step="0.05"
+                value="1"
+            >
+
+        </div>
+
+        <div id="status">
+            Drag to rotate • Pinch to zoom
+        </div>
+
+    </div>
+
+    <!-- CROP MODAL -->
+
+    <div id="cropModal">
+
+        <div class="cropBox">
+
+            <div class="cropTitle">
+                Adjust Your Design
+            </div>
+
+            <canvas id="cropCanvas"
+                    width="600"
+                    height="800">
+            </canvas>
+
+            <div class="cropButtons">
+
+                <button id="cancelCrop">
+                    Cancel
+                </button>
+
+                <button id="applyCrop">
+                    Apply Design
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
 </div>
 
-<div id="viewer">
-<div id="loading">
-<div class="loading-title">Loading T-Shirt...</div>
-<div class="progress-box"><div id="progress"></div></div>
-<div id="loadingText">Preparing 3D model</div>
-</div>
-</div>
-
-<div class="controls">
-<label class="upload-label" for="designInput">Upload Design</label>
-<input id="designInput" type="file" accept="image/png,image/jpeg,image/webp">
-<button id="removeBtn" class="secondary">Remove</button>
-<button id="resetBtn" class="secondary">Reset View</button>
-<div class="brightness-control">
-<span>Brightness</span>
-<input id="brightnessSlider" type="range" min=".30" max="1.10" step=".05" value=".70">
-</div>
-</div>
-
-<div id="message"></div>
-
-<div id="cropModal" class="modal">
-<div class="modal-box">
-<div class="modal-header">
-<div class="modal-title">Adjust Your Design</div>
-<button id="closeCrop" class="close">×</button>
-</div>
-<div class="crop-area">
-<img id="cropImage" alt="Design">
-</div>
-<div class="crop-info">
-Move and zoom your design.<br>
-Print ratio is fixed at <b>3 : 4</b>.
-</div>
-<div class="modal-buttons">
-<button id="cancelCrop" class="secondary">Cancel</button>
-<button id="applyCrop">Apply Design</button>
-</div>
-</div>
-</div>
 
 <script>
-const MODEL_FILE="shirt.glb";
-const PRINT_RATIO=3/4;
-const PRINT_WIDTH=.78;
-const PRINT_HEIGHT=PRINT_WIDTH/PRINT_RATIO;
-const PRINT_DEPTH=.16;
-const PRINT_X=0;
-const PRINT_Y_RATIO=.60;
-const MODEL_Y_OFFSET=.22;
-const DEFAULT_CAMERA_Z=5.0;
-const DEFAULT_CAMERA_Y=.68;
-const DEFAULT_TARGET_Y=.55;
 
-let scene,camera,renderer,controls,shirt=null,decal=null,designTexture=null,cropper=null,designURL=null;
-let shirtMeshes=[];
-let shirtBounds=null;
+"use strict";
 
-const viewer=document.getElementById("viewer");
-const loading=document.getElementById("loading");
-const progress=document.getElementById("progress");
-const loadingText=document.getElementById("loadingText");
-const designInput=document.getElementById("designInput");
-const cropModal=document.getElementById("cropModal");
-const cropImage=document.getElementById("cropImage");
-const applyCrop=document.getElementById("applyCrop");
-const cancelCrop=document.getElementById("cancelCrop");
-const closeCrop=document.getElementById("closeCrop");
-const removeBtn=document.getElementById("removeBtn");
-const resetBtn=document.getElementById("resetBtn");
-const brightnessSlider=document.getElementById("brightnessSlider");
-const message=document.getElementById("message");
 
-function showMessage(text){
-message.textContent=text;
-message.style.display="block";
-clearTimeout(showMessage.timer);
-showMessage.timer=setTimeout(()=>message.style.display="none",2800);
+/* =========================================================
+   CONFIG
+========================================================= */
+
+const MODEL_FILE = "shirt.glb";
+
+/*
+   Fixed print ratio.
+
+   3:4 means:
+
+   width  = 3
+   height = 4
+*/
+const PRINT_RATIO = 3 / 4;
+
+
+/*
+   Print area size.
+
+   Change ONLY PRINT_WIDTH if you want
+   print bigger/smaller.
+*/
+const PRINT_WIDTH = 0.82;
+
+const PRINT_HEIGHT =
+    PRINT_WIDTH / PRINT_RATIO;
+
+
+/*
+   Shirt vertical position.
+*/
+const MODEL_Y_OFFSET = 0.25;
+
+
+/*
+   Camera.
+*/
+const CAMERA_Z = 5.2;
+
+const CAMERA_Y = 0.65;
+
+const TARGET_Y = 0.55;
+
+
+/*
+   Print position on shirt.
+
+   0.50 = middle
+   0.55 = slightly lower
+   0.60 = chest/lower chest
+
+   Start with 0.59.
+*/
+const PRINT_Y_RATIO = 0.59;
+
+
+/*
+   Small distance between shirt
+   and print layer.
+*/
+const PRINT_OFFSET = 0.012;
+
+
+/* =========================================================
+   GLOBALS
+========================================================= */
+
+let scene;
+
+let camera;
+
+let renderer;
+
+let controls;
+
+let shirt;
+
+let shirtMeshes = [];
+
+let printLayer = null;
+
+let designCanvas = null;
+
+let designTexture = null;
+
+let pendingImage = null;
+
+
+/* =========================================================
+   DOM
+========================================================= */
+
+const viewer =
+    document.getElementById("viewer");
+
+const loading =
+    document.getElementById("loading");
+
+const upload =
+    document.getElementById("upload");
+
+const removeBtn =
+    document.getElementById("removeBtn");
+
+const brightness =
+    document.getElementById("brightness");
+
+const status =
+    document.getElementById("status");
+
+const cropModal =
+    document.getElementById("cropModal");
+
+const cropCanvas =
+    document.getElementById("cropCanvas");
+
+const applyCrop =
+    document.getElementById("applyCrop");
+
+const cancelCrop =
+    document.getElementById("cancelCrop");
+
+
+/* =========================================================
+   INIT
+========================================================= */
+
+init();
+
+
+function init(){
+
+    /* -----------------------------------------------------
+       SCENE
+    ----------------------------------------------------- */
+
+    scene =
+        new THREE.Scene();
+
+    scene.background =
+        new THREE.Color(0x111111);
+
+
+    /* -----------------------------------------------------
+       CAMERA
+    ----------------------------------------------------- */
+
+    camera =
+        new THREE.PerspectiveCamera(
+            35,
+            window.innerWidth /
+            window.innerHeight,
+            0.01,
+            100
+        );
+
+    camera.position.set(
+        0,
+        CAMERA_Y,
+        CAMERA_Z
+    );
+
+
+    /* -----------------------------------------------------
+       RENDERER
+    ----------------------------------------------------- */
+
+    renderer =
+        new THREE.WebGLRenderer({
+            antialias:true,
+            alpha:false,
+            powerPreference:"high-performance"
+        });
+
+    renderer.setPixelRatio(
+        Math.min(
+            window.devicePixelRatio || 1,
+            1.35
+        )
+    );
+
+    renderer.setSize(
+        window.innerWidth,
+        window.innerHeight
+    );
+
+    renderer.outputEncoding =
+        THREE.sRGBEncoding;
+
+    renderer.physicallyCorrectLights =
+        false;
+
+    viewer.appendChild(
+        renderer.domElement
+    );
+
+
+    /* -----------------------------------------------------
+       LIGHTS
+    ----------------------------------------------------- */
+
+    const hemi =
+        new THREE.HemisphereLight(
+            0xffffff,
+            0x555555,
+            1.25
+        );
+
+    hemi.name =
+        "Main Hemisphere Light";
+
+    scene.add(hemi);
+
+
+    const keyLight =
+        new THREE.DirectionalLight(
+            0xffffff,
+            1.25
+        );
+
+    keyLight.position.set(
+        2,
+        4,
+        5
+    );
+
+    scene.add(keyLight);
+
+
+    const fillLight =
+        new THREE.DirectionalLight(
+            0xffffff,
+            0.7
+        );
+
+    fillLight.position.set(
+        -3,
+        2,
+        4
+    );
+
+    scene.add(fillLight);
+
+
+    /* -----------------------------------------------------
+       CONTROLS
+    ----------------------------------------------------- */
+
+    controls =
+        new THREE.OrbitControls(
+            camera,
+            renderer.domElement
+        );
+
+    controls.enableDamping = true;
+
+    controls.dampingFactor = 0.08;
+
+    controls.enablePan = false;
+
+    controls.minDistance = 3;
+
+    controls.maxDistance = 8;
+
+    controls.target.set(
+        0,
+        TARGET_Y,
+        0
+    );
+
+
+    /* -----------------------------------------------------
+       LOAD MODEL
+    ----------------------------------------------------- */
+
+    const loader =
+        new THREE.GLTFLoader();
+
+
+    loader.load(
+
+        MODEL_FILE,
+
+        function(gltf){
+
+            shirt =
+                gltf.scene;
+
+
+            /*
+               Collect meshes.
+            */
+
+            shirtMeshes = [];
+
+
+            shirt.traverse(
+                function(object){
+
+                    if(
+                        object.isMesh
+                    ){
+
+                        shirtMeshes.push(
+                            object
+                        );
+
+
+                        /*
+                           Keep original materials.
+                           DO NOT replace them.
+                        */
+
+                        if(
+                            object.material
+                        ){
+
+                            object.material =
+                                object.material.clone();
+
+                        }
+
+
+                        object.castShadow =
+                            false;
+
+                        object.receiveShadow =
+                            true;
+                    }
+
+                }
+            );
+
+
+            /*
+               Normalize model size.
+            */
+
+            const box =
+                new THREE.Box3()
+                    .setFromObject(
+                        shirt
+                    );
+
+
+            const size =
+                new THREE.Vector3();
+
+            box.getSize(size);
+
+
+            const maxSize =
+                Math.max(
+                    size.x,
+                    size.y,
+                    size.z
+                );
+
+
+            const scale =
+                2.25 / maxSize;
+
+
+            shirt.scale.setScalar(
+                scale
+            );
+
+
+            /*
+               Move shirt upward.
+            */
+
+            shirt.position.y +=
+                MODEL_Y_OFFSET;
+
+
+            scene.add(
+                shirt
+            );
+
+
+            /*
+               Reset camera.
+            */
+
+            camera.position.set(
+                0,
+                CAMERA_Y,
+                CAMERA_Z
+            );
+
+
+            controls.target.set(
+                0,
+                TARGET_Y,
+                0
+            );
+
+
+            controls.update();
+
+
+            loading.style.display =
+                "none";
+
+
+            status.textContent =
+                "3D T-Shirt Ready • Upload your design";
+
+
+            /*
+               Render first frame.
+            */
+
+            renderer.render(
+                scene,
+                camera
+            );
+
+        },
+
+        function(xhr){
+
+            if(
+                xhr.lengthComputable
+            ){
+
+                const percent =
+                    Math.round(
+                        (
+                            xhr.loaded /
+                            xhr.total
+                        ) * 100
+                    );
+
+                loading.textContent =
+                    "Loading 3D T-Shirt " +
+                    percent +
+                    "%";
+
+            }
+
+        },
+
+        function(error){
+
+            console.error(
+                "GLB ERROR:",
+                error
+            );
+
+            loading.textContent =
+                "Unable to load shirt.glb";
+
+        }
+
+    );
+
+
+    /* -----------------------------------------------------
+       EVENTS
+    ----------------------------------------------------- */
+
+    upload.addEventListener(
+        "change",
+        handleUpload
+    );
+
+
+    applyCrop.addEventListener(
+        "click",
+        applyDesign
+    );
+
+
+    cancelCrop.addEventListener(
+        "click",
+        function(){
+
+            cropModal.style.display =
+                "none";
+
+            pendingImage =
+                null;
+
+            upload.value =
+                "";
+
+        }
+    );
+
+
+    removeBtn.addEventListener(
+        "click",
+        removeDesign
+    );
+
+
+    brightness.addEventListener(
+        "input",
+        updateBrightness
+    );
+
+
+    window.addEventListener(
+        "resize",
+        onResize
+    );
+
+
+    animate();
+
 }
 
-scene=new THREE.Scene();
-scene.background=new THREE.Color(0x080808);
 
-camera=new THREE.PerspectiveCamera(
-35,
-viewer.clientWidth/viewer.clientHeight,
-.01,
-100
-);
-camera.position.set(0,DEFAULT_CAMERA_Y,DEFAULT_CAMERA_Z);
+/* =========================================================
+   UPLOAD
+========================================================= */
 
-renderer=new THREE.WebGLRenderer({
-antialias:true,
-powerPreference:"high-performance"
-});
-renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,1.35));
-renderer.setSize(viewer.clientWidth,viewer.clientHeight);
-renderer.outputEncoding=THREE.sRGBEncoding;
-renderer.physicallyCorrectLights=false;
-viewer.appendChild(renderer.domElement);
+function handleUpload(event){
 
-const ambient=new THREE.HemisphereLight(0xffffff,0x222222,.75);
-scene.add(ambient);
+    const file =
+        event.target.files &&
+        event.target.files[0];
 
-const keyLight=new THREE.DirectionalLight(0xffffff,1.15);
-keyLight.position.set(2,4,4);
-scene.add(keyLight);
 
-const fillLight=new THREE.DirectionalLight(0xffffff,.35);
-fillLight.position.set(-3,2,2);
-scene.add(fillLight);
+    if(!file){
 
-function applyBrightness(value){
-const b=parseFloat(value);
-ambient.intensity=.75*b;
-keyLight.intensity=1.15*b;
-fillLight.intensity=.35*b;
+        return;
+    }
+
+
+    if(
+        !file.type.startsWith("image/")
+    ){
+
+        status.textContent =
+            "Please select an image.";
+
+        return;
+    }
+
+
+    const reader =
+        new FileReader();
+
+
+    reader.onload =
+        function(e){
+
+            const image =
+                new Image();
+
+
+            image.onload =
+                function(){
+
+                    pendingImage =
+                        image;
+
+
+                    openCropper(
+                        image
+                    );
+
+                };
+
+
+            image.onerror =
+                function(){
+
+                    status.textContent =
+                        "Could not read image.";
+
+                };
+
+
+            image.src =
+                e.target.result;
+
+        };
+
+
+    reader.readAsDataURL(
+        file
+    );
+
 }
 
-brightnessSlider.addEventListener("input",()=>{
-applyBrightness(brightnessSlider.value);
-});
 
-applyBrightness(brightnessSlider.value);
+/* =========================================================
+   CROP
+========================================================= */
 
-controls=new THREE.OrbitControls(camera,renderer.domElement);
-controls.enableDamping=true;
-controls.dampingFactor=.08;
-controls.enablePan=false;
-controls.minDistance=3.0;
-controls.maxDistance=7.0;
-controls.target.set(0,DEFAULT_TARGET_Y,0);
-controls.update();
+function openCropper(image){
 
-const loader=new THREE.GLTFLoader();
+    cropModal.style.display =
+        "flex";
 
-loader.load(
-MODEL_FILE,
-gltf=>{
-shirt=gltf.scene;
 
-const originalBox=new THREE.Box3().setFromObject(shirt);
-const size=originalBox.getSize(new THREE.Vector3());
-const center=originalBox.getCenter(new THREE.Vector3());
+    const ctx =
+        cropCanvas.getContext(
+            "2d"
+        );
 
-shirt.position.sub(center);
 
-const maxSize=Math.max(size.x,size.y,size.z);
-if(maxSize>0){
-shirt.scale.multiplyScalar(2.2/maxSize);
+    const canvasWidth =
+        600;
+
+    const canvasHeight =
+        800;
+
+
+    cropCanvas.width =
+        canvasWidth;
+
+    cropCanvas.height =
+        canvasHeight;
+
+
+    /*
+       Cover image inside 3:4 box.
+    */
+
+    const scale =
+        Math.max(
+            canvasWidth /
+                image.width,
+
+            canvasHeight /
+                image.height
+        );
+
+
+    const drawWidth =
+        image.width *
+        scale;
+
+
+    const drawHeight =
+        image.height *
+        scale;
+
+
+    const x =
+        (
+            canvasWidth -
+            drawWidth
+        ) / 2;
+
+
+    const y =
+        (
+            canvasHeight -
+            drawHeight
+        ) / 2;
+
+
+    /*
+       Clear.
+    */
+
+    ctx.clearRect(
+        0,
+        0,
+        canvasWidth,
+        canvasHeight
+    );
+
+
+    /*
+       Draw design.
+    */
+
+    ctx.drawImage(
+        image,
+        x,
+        y,
+        drawWidth,
+        drawHeight
+    );
+
 }
 
-shirt.position.y+=MODEL_Y_OFFSET;
 
-shirt.traverse(object=>{
-if(object.isMesh){
-shirtMeshes.push(object);
-object.castShadow=false;
-object.receiveShadow=false;
-if(object.material){
-object.material.side=THREE.FrontSide;
-}
-}
-});
+/* =========================================================
+   APPLY DESIGN
+========================================================= */
 
-scene.add(shirt);
-shirt.updateMatrixWorld(true);
-updateShirtBounds();
+function applyDesign(){
 
-loading.style.display="none";
-},
-xhr=>{
-if(xhr.total){
-const percent=xhr.loaded/xhr.total*100;
-progress.style.width=percent.toFixed(0)+"%";
-loadingText.textContent="Loading T-Shirt "+percent.toFixed(0)+"%";
-}
-},
-error=>{
-console.error("GLB ERROR:",error);
-loadingText.textContent="Could not load shirt.glb";
-showMessage("shirt.glb could not be loaded.");
-}
-);
+    if(!shirt){
 
-function updateShirtBounds(){
-if(!shirt)return;
-shirt.updateMatrixWorld(true);
-shirtBounds=new THREE.Box3().setFromObject(shirt);
-}
+        status.textContent =
+            "3D model is still loading.";
 
-function findPrintSurface(){
-if(!shirt||!shirtMeshes.length)return null;
+        return;
+    }
 
-updateShirtBounds();
 
-const height=shirtBounds.max.y-shirtBounds.min.y;
-const targetY=shirtBounds.min.y+height*PRINT_Y_RATIO;
-const targetX=(shirtBounds.min.x+shirtBounds.max.x)/2+PRINT_X;
+    if(!pendingImage){
 
-const rayStart=new THREE.Vector3(
-targetX,
-targetY,
-shirtBounds.max.z+2
-);
+        return;
+    }
 
-const rayDirection=new THREE.Vector3(0,0,-1);
 
-const raycaster=new THREE.Raycaster();
-raycaster.set(rayStart,rayDirection);
+    /*
+       Hide crop popup.
+    */
 
-const hits=raycaster.intersectObjects(shirtMeshes,true);
+    cropModal.style.display =
+        "none";
 
-if(!hits.length)return null;
 
-for(let i=0;i<hits.length;i++){
-const hit=hits[i];
+    /*
+       Remove old print.
+    */
 
-if(hit.object&&hit.face){
-return hit;
-}
-}
+    removePrintLayer();
 
-return null;
-}
 
-function removeDecal(){
-if(!decal)return;
+    /*
+       Create final print canvas.
+    */
 
-if(decal.parent){
-decal.parent.remove(decal);
-}
+    designCanvas =
+        document.createElement(
+            "canvas"
+        );
 
-if(decal.geometry){
-decal.geometry.dispose();
-}
 
-if(decal.material){
-decal.material.dispose();
-}
+    designCanvas.width =
+        900;
 
-decal=null;
-}
+    designCanvas.height =
+        1200;
 
-function createPrintDecal(){
-if(!shirt||!designTexture)return;
 
-removeDecal();
+    const ctx =
+        designCanvas.getContext(
+            "2d"
+        );
 
-const hit=findPrintSurface();
 
-if(!hit){
-showMessage("Could not find the front print area.");
-return;
-}
+    /*
+       Transparent background.
 
-const mesh=hit.object;
+       IMPORTANT:
+       We do NOT draw a white rectangle.
+       Only uploaded design appears.
+    */
 
-mesh.updateMatrixWorld(true);
+    ctx.clearRect(
+        0,
+        0,
+        designCanvas.width,
+        designCanvas.height
+    );
 
-const localPosition=mesh.worldToLocal(
-hit.point.clone()
-);
 
-const localNormal=hit.face.normal.clone().normalize();
+    /*
+       Draw cropped image.
+    */
 
-const quaternion=new THREE.Quaternion();
-quaternion.setFromUnitVectors(
-new THREE.Vector3(0,0,1),
-localNormal
-);
+    ctx.drawImage(
+        cropCanvas,
+        0,
+        0,
+        designCanvas.width,
+        designCanvas.height
+    );
 
-const orientation=new THREE.Euler();
-orientation.setFromQuaternion(quaternion);
 
-const worldScale=new THREE.Vector3();
-mesh.getWorldScale(worldScale);
+    /*
+       Create texture.
+    */
 
-const sx=Math.max(Math.abs(worldScale.x),.0001);
-const sy=Math.max(Math.abs(worldScale.y),.0001);
-const sz=Math.max(Math.abs(worldScale.z),.0001);
+    designTexture =
+        new THREE.CanvasTexture(
+            designCanvas
+        );
 
-const decalSize=new THREE.Vector3(
-PRINT_WIDTH/sx,
-PRINT_HEIGHT/sy,
-PRINT_DEPTH/sz
-);
 
-const geometry=new THREE.DecalGeometry(
-mesh,
-localPosition,
-orientation,
-decalSize
-);
+    /*
+       Important for correct colors.
+    */
 
-const material=new THREE.MeshBasicMaterial({
-map:designTexture,
-transparent:true,
-depthTest:true,
-depthWrite:false,
-polygonOffset:true,
-polygonOffsetFactor:-4,
-polygonOffsetUnits:-4,
-side:THREE.DoubleSide
-});
+    designTexture.encoding =
+        THREE.sRGBEncoding;
 
-decal=new THREE.Mesh(
-geometry,
-material
-);
 
-mesh.add(decal);
-decal.renderOrder=10;
+    designTexture.minFilter =
+        THREE.LinearFilter;
+
+
+    designTexture.magFilter =
+        THREE.LinearFilter;
+
+
+    designTexture.generateMipmaps =
+        false;
+
+
+    designTexture.needsUpdate =
+        true;
+
+
+    /*
+       Create visible print layer.
+    */
+
+    createPrintLayer();
+
+
+    removeBtn.style.display =
+        "block";
+
+
+    status.textContent =
+        "Design applied successfully";
+
+
+    pendingImage =
+        null;
+
 }
 
-designInput.addEventListener("change",event=>{
-const file=event.target.files&&event.target.files[0];
 
-if(!file)return;
+/* =========================================================
+   CREATE PRINT LAYER
+========================================================= */
 
-if(!file.type.startsWith("image/")){
-showMessage("Please select an image file.");
-return;
+function createPrintLayer(){
+
+    if(!shirt){
+
+        return;
+    }
+
+
+    /*
+       Calculate shirt bounds
+       AFTER normalization.
+    */
+
+    const bounds =
+        new THREE.Box3()
+            .setFromObject(
+                shirt
+            );
+
+
+    const shirtSize =
+        new THREE.Vector3();
+
+    bounds.getSize(
+        shirtSize
+    );
+
+
+    /*
+       Find front chest point.
+
+       The model front is +Z.
+    */
+
+    const chestY =
+        bounds.min.y +
+        (
+            shirtSize.y *
+            PRINT_Y_RATIO
+        );
+
+
+    /*
+       Raycast from front toward shirt.
+
+       This finds the actual shirt
+       surface instead of guessing Z.
+    */
+
+    const rayStart =
+        new THREE.Vector3(
+            0,
+            chestY,
+            bounds.max.z + 2
+        );
+
+
+    const rayDirection =
+        new THREE.Vector3(
+            0,
+            0,
+            -1
+        );
+
+
+    const raycaster =
+        new THREE.Raycaster();
+
+
+    raycaster.set(
+        rayStart,
+        rayDirection
+    );
+
+
+    const hits =
+        raycaster.intersectObjects(
+            shirtMeshes,
+            true
+        );
+
+
+    let hit = null;
+
+
+    /*
+       First valid front hit.
+    */
+
+    for(
+        let i = 0;
+        i < hits.length;
+        i++
+    ){
+
+        if(
+            hits[i] &&
+            hits[i].object &&
+            hits[i].point
+        ){
+
+            hit =
+                hits[i];
+
+            break;
+
+        }
+
+    }
+
+
+    /*
+       If ray misses because the
+       shirt has unusual geometry,
+       use front center fallback.
+    */
+
+    let printPosition;
+
+
+    let printNormal =
+        new THREE.Vector3(
+            0,
+            0,
+            1
+        );
+
+
+    if(hit){
+
+        printPosition =
+            hit.point.clone();
+
+
+        /*
+           Surface normal.
+        */
+
+        if(
+            hit.face &&
+            hit.object
+        ){
+
+            const normalMatrix =
+                new THREE.Matrix3()
+                    .getNormalMatrix(
+                        hit.object.matrixWorld
+                    );
+
+
+            printNormal =
+                hit.face.normal
+                    .clone()
+                    .applyMatrix3(
+                        normalMatrix
+                    )
+                    .normalize();
+
+        }
+
+    }else{
+
+        /*
+           Fallback position.
+        */
+
+        printPosition =
+            new THREE.Vector3(
+                0,
+                chestY,
+                bounds.max.z
+            );
+
+    }
+
+
+    /*
+       Push print slightly
+       outside shirt surface.
+
+       This prevents z-fighting.
+    */
+
+    printPosition.add(
+        printNormal
+            .clone()
+            .multiplyScalar(
+                PRINT_OFFSET
+            )
+    );
+
+
+    /*
+       Create print plane.
+    */
+
+    const geometry =
+        new THREE.PlaneGeometry(
+            PRINT_WIDTH,
+            PRINT_HEIGHT,
+            1,
+            1
+        );
+
+
+    const material =
+        new THREE.MeshBasicMaterial({
+
+            map:
+                designTexture,
+
+            transparent:
+                true,
+
+            opacity:
+                1,
+
+            side:
+                THREE.DoubleSide,
+
+            depthTest:
+                true,
+
+            depthWrite:
+                false,
+
+            toneMapped:
+                false
+
+        });
+
+
+    /*
+       IMPORTANT:
+       Plane must be visible over
+       original shirt.
+    */
+
+    material.polygonOffset =
+        true;
+
+    material.polygonOffsetFactor =
+        -1;
+
+    material.polygonOffsetUnits =
+        -1;
+
+
+    printLayer =
+        new THREE.Mesh(
+            geometry,
+            material
+        );
+
+
+    printLayer.name =
+        "PRINT_DESIGN_LAYER";
+
+
+    /*
+       Position.
+    */
+
+    printLayer.position.copy(
+        printPosition
+    );
+
+
+    /*
+       Rotate plane so its front
+       faces the shirt surface.
+
+       Default PlaneGeometry normal
+       is +Z.
+    */
+
+    const defaultNormal =
+        new THREE.Vector3(
+            0,
+            0,
+            1
+        );
+
+
+    const quaternion =
+        new THREE.Quaternion();
+
+
+    quaternion.setFromUnitVectors(
+        defaultNormal,
+        printNormal
+    );
+
+
+    printLayer.quaternion.copy(
+        quaternion
+    );
+
+
+    /*
+       Keep design above shirt.
+    */
+
+    printLayer.renderOrder =
+        999;
+
+
+    /*
+       Add to scene, NOT inside
+       shirt mesh.
+
+       This makes it much more
+       reliable.
+    */
+
+    scene.add(
+        printLayer
+    );
+
+
+    /*
+       Force texture update.
+    */
+
+    designTexture.needsUpdate =
+        true;
+
+
+    /*
+       DEBUG RENDER.
+    */
+
+    renderer.render(
+        scene,
+        camera
+    );
+
 }
 
-if(designURL){
-URL.revokeObjectURL(designURL);
+
+/* =========================================================
+   REMOVE DESIGN
+========================================================= */
+
+function removeDesign(){
+
+    removePrintLayer();
+
+
+    removeBtn.style.display =
+        "none";
+
+
+    status.textContent =
+        "Design removed";
+
+
+    upload.value =
+        "";
+
 }
 
-designURL=URL.createObjectURL(file);
-cropImage.src=designURL;
-cropModal.classList.add("active");
 
-cropImage.onload=()=>{
-setupCropper();
-};
-});
+/* =========================================================
+   REMOVE PRINT OBJECT
+========================================================= */
 
-function setupCropper(){
-if(cropper){
-cropper.destroy();
-cropper=null;
+function removePrintLayer(){
+
+    if(!printLayer){
+
+        return;
+    }
+
+
+    scene.remove(
+        printLayer
+    );
+
+
+    if(
+        printLayer.geometry
+    ){
+
+        printLayer.geometry.dispose();
+
+    }
+
+
+    if(
+        printLayer.material
+    ){
+
+        printLayer.material.dispose();
+
+    }
+
+
+    printLayer =
+        null;
+
+
+    if(designTexture){
+
+        designTexture.dispose();
+
+        designTexture =
+            null;
+
+    }
+
 }
 
-cropper=new Cropper(cropImage,{
-aspectRatio:PRINT_RATIO,
-responsive:true,
-viewMode:1,
-dragMode:"move",
-autoCropArea:.80,
-background:false,
-guides:true,
-center:true,
-highlight:false,
-cropBoxMovable:false,
-cropBoxResizable:true,
-zoomable:true,
-zoomOnWheel:true,
-zoomOnTouch:true,
-movable:true,
-rotatable:false,
-scalable:false
-});
+
+/* =========================================================
+   BRIGHTNESS
+========================================================= */
+
+function updateBrightness(){
+
+    const value =
+        parseFloat(
+            brightness.value
+        );
+
+
+    const lights =
+        scene.children;
+
+
+    for(
+        let i = 0;
+        i < lights.length;
+        i++
+    ){
+
+        const object =
+            lights[i];
+
+
+        if(
+            object.isLight
+        ){
+
+            /*
+               Preserve relative
+               lighting.
+            */
+
+            if(
+                object.name ===
+                "Main Hemisphere Light"
+            ){
+
+                object.intensity =
+                    1.25 * value;
+
+            }
+
+            else
+            if(
+                object.isDirectionalLight
+            ){
+
+                /*
+                   Base directional
+                   intensity.
+                */
+
+                if(
+                    object ===
+                    lights[1]
+                ){
+
+                    object.intensity =
+                        1.25 * value;
+
+                }else{
+
+                    object.intensity =
+                        0.7 * value;
+
+                }
+
+            }
+
+        }
+
+    }
+
 }
 
-applyCrop.addEventListener("click",()=>{
-if(!cropper){
-showMessage("Please select a design first.");
-return;
+
+/* =========================================================
+   RESIZE
+========================================================= */
+
+function onResize(){
+
+    camera.aspect =
+        window.innerWidth /
+        window.innerHeight;
+
+
+    camera.updateProjectionMatrix();
+
+
+    renderer.setSize(
+        window.innerWidth,
+        window.innerHeight
+    );
+
 }
 
-const canvas=cropper.getCroppedCanvas({
-width:1200,
-height:Math.round(1200/PRINT_RATIO),
-imageSmoothingEnabled:true,
-imageSmoothingQuality:"high"
-});
 
-if(!canvas){
-showMessage("Could not crop image.");
-return;
-}
-
-const texture=new THREE.CanvasTexture(canvas);
-
-texture.encoding=THREE.sRGBEncoding;
-texture.minFilter=THREE.LinearFilter;
-texture.magFilter=THREE.LinearFilter;
-texture.generateMipmaps=false;
-
-if(designTexture){
-designTexture.dispose();
-}
-
-designTexture=texture;
-
-createPrintDecal();
-
-if(decal){
-closeCropModal();
-showMessage("Design applied to print area.");
-}else{
-showMessage("Could not create print area.");
-}
-});
-
-function closeCropModal(){
-cropModal.classList.remove("active");
-
-if(cropper){
-cropper.destroy();
-cropper=null;
-}
-
-designInput.value="";
-}
-
-cancelCrop.addEventListener("click",closeCropModal);
-closeCrop.addEventListener("click",closeCropModal);
-
-removeBtn.addEventListener("click",()=>{
-removeDecal();
-
-if(designTexture){
-designTexture.dispose();
-designTexture=null;
-}
-
-showMessage("Design removed.");
-});
-
-resetBtn.addEventListener("click",()=>{
-camera.position.set(
-0,
-DEFAULT_CAMERA_Y,
-DEFAULT_CAMERA_Z
-);
-
-if(controls){
-controls.target.set(
-0,
-DEFAULT_TARGET_Y,
-0
-);
-controls.update();
-}
-
-if(decal&&designTexture){
-createPrintDecal();
-}
-});
-
-window.addEventListener("resize",()=>{
-const width=viewer.clientWidth;
-const height=viewer.clientHeight;
-
-camera.aspect=width/height;
-camera.updateProjectionMatrix();
-
-renderer.setSize(width,height);
-});
+/* =========================================================
+   ANIMATION
+========================================================= */
 
 function animate(){
-requestAnimationFrame(animate);
 
-if(controls){
-controls.update();
+    requestAnimationFrame(
+        animate
+    );
+
+
+    if(controls){
+
+        controls.update();
+
+    }
+
+
+    renderer.render(
+        scene,
+        camera
+    );
+
 }
 
-renderer.render(scene,camera);
-}
-
-animate();
 </script>
 
 </body>
